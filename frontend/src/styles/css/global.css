@@ -1,0 +1,8 @@
+html {
+  /* Smooth animated scrolling for in-page anchor links (e.g. the hero's
+     "Jetzt entdecken" jumping to #products). */
+  scroll-behavior: smooth;
+  /* Offset anchor targets by the sticky navbar height so they don't hide
+     underneath it. */
+  scroll-padding-top: 6rem;
+}

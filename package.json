@@ -1,0 +1,18 @@
+{
+    "name": "nebiora",
+    "version": "0.0.0",
+    "private": false,
+    "scripts": {
+        "dev": "npm run dev --prefix frontend run dev",
+        "build:frontend": "npm run build --prefix frontend run build",
+        "build:backend": "npm run build --prefix backend run build",
+        "build": "npm run build:frontend && npm run build:backend",
+        "build-tokens": "node scripts/build-tokens.js",
+        "generate-icons": "node scripts/generate-icons.js",
+        "find-icon": "node scripts/find-icon.js",
+        "scaffold": "node scripts/scaffold.js",
+        "barrel": "node scripts/barrel.js",
+        "color": "node scripts/color-scale.js"
+    },
+    "author": "Robert James Herold"
+}

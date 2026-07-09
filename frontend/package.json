@@ -13,9 +13,7 @@
     "build-tokens": "node ../scripts/build-tokens.js",
     "generate-icons": "node ../scripts/generate-icons.js",
     "find-icon": "node ../scripts/find-icon.js",
-    "scaffold": "node ../scripts/scaffold.js",
-    "deploy": "wrangler deploy",
-    "update": "wrangler update"
+    "scaffold": "node ../scripts/scaffold.js"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.2",

@@ -13,7 +13,8 @@
     "build-tokens": "node ../scripts/build-tokens.js",
     "generate-icons": "node ../scripts/generate-icons.js",
     "find-icon": "node ../scripts/find-icon.js",
-    "scaffold": "node ../scripts/scaffold.js"
+    "scaffold": "node ../scripts/scaffold.js",
+    "dev:worker": "wrangler deploy"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.2",
@@ -26,6 +27,8 @@
   },
   "devDependencies": {
     "@babel/core": "^7.29.0",
+    "@cloudflare/vite-plugin": "^1.44.0",
+    "@cloudflare/workers-types": "^5.20260708.1",
     "@eslint/js": "^10.0.1",
     "@rolldown/plugin-babel": "^0.2.3",
     "@types/babel__core": "^7.20.5",
@@ -42,6 +45,7 @@
     "style-dictionary": "^4.4.0",
     "typescript": "~6.0.2",
     "typescript-eslint": "^8.59.2",
-    "vite": "^8.1.4"
+    "vite": "^8.1.4",
+    "wrangler": "^4.110.0"
   }
 }

@@ -1,0 +1,34 @@
+{
+    "allowManagedHooksOnly": true,
+    "allowManagedPermissionRulesOnly": true,
+    "allowManagedMcpServersOnly": true,
+    "permissions": {
+        "deny": [
+            "Bash(curl*|wget*)",
+            "Bash(npm publish*)",
+            "Bash(git push --force*)",
+            "Read(~/.ssh/*)",
+            "Read(~/.aws/*)",
+            "Read(**/.env*)",
+            "Read(**/secrets.*)"
+        ],
+        "ask": [
+            "Bash(git push*)",
+            "Bash(docker run*)",
+            "Bash(pnpm exec*)"
+        ],
+        "allow": [
+            "Bash(git diff*)",
+            "Bash(git log*)",
+            "Bash(pnpm test*)",
+            "Bash(pnpm lint*)",
+            "Bash(pnpm build*)"
+        ]
+    },
+    "enabledMcpServers": [
+        "github",
+        "linear",
+        "sentry"
+    ],
+    "transcriptRetentionDays": 14
+}

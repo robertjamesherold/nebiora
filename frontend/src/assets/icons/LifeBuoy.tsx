@@ -1,0 +1,37 @@
+import type { SVGProps } from 'react';
+
+export type IconSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl';
+
+export interface IconProps extends SVGProps<SVGSVGElement> {
+  size?: IconSize;
+}
+
+const DIMENSIONS: Record<IconSize, { width: number; height: number; strokeWidth: number }> = {
+  xs: { width: 16, height: 16, strokeWidth: 1.6 },
+  sm: { width: 20, height: 20, strokeWidth: 2 },
+  md: { width: 24, height: 24, strokeWidth: 2.5 },
+  lg: { width: 32, height: 32, strokeWidth: 3 },
+  xl: { width: 40, height: 40, strokeWidth: 3.5 },
+  xxl: { width: 48, height: 48, strokeWidth: 4 },
+};
+
+export function LifeBuoy({ size = 'md', strokeWidth, ...props }: IconProps) {
+  const dimensions = DIMENSIONS[size];
+
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width={dimensions.width}
+      height={dimensions.height}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={strokeWidth ?? dimensions.strokeWidth}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      {...props}
+    >
+      <circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="4"></circle><line x1="4.93" y1="4.93" x2="9.17" y2="9.17"></line><line x1="14.83" y1="14.83" x2="19.07" y2="19.07"></line><line x1="14.83" y1="9.17" x2="19.07" y2="4.93"></line><line x1="14.83" y1="9.17" x2="18.36" y2="5.64"></line><line x1="4.93" y1="19.07" x2="9.17" y2="14.83"></line>
+    </svg>
+  );
+}

@@ -1,0 +1,12 @@
+{
+  "font": {
+    "display": {
+      "$type": "fontFamily",
+      "$value": "'Figtree', system-ui, sans-serif"
+    },
+    "body": {
+      "$type": "fontFamily",
+      "$value": "'Figtree', system-ui, sans-serif"
+    }
+  }
+}

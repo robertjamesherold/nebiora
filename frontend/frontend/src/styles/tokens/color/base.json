@@ -1,0 +1,13 @@
+{
+  "color": {
+    "space": {
+      "950": { "$type": "color", "$value": "#050409" },
+      "900": { "$type": "color", "$value": "#0a0812" },
+      "800": { "$type": "color", "$value": "#120f1d" }
+    },
+    "star": {
+      "50": { "$type": "color", "$value": "#ffffff" },
+      "100": { "$type": "color", "$value": "#f4f2fb" }
+    }
+  }
+}

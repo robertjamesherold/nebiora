@@ -1,0 +1,37 @@
+import type { SVGProps } from 'react';
+
+export type IconSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl';
+
+export interface IconProps extends SVGProps<SVGSVGElement> {
+  size?: IconSize;
+}
+
+const DIMENSIONS: Record<IconSize, { width: number; height: number; strokeWidth: number }> = {
+  xs: { width: 16, height: 16, strokeWidth: 1.6 },
+  sm: { width: 20, height: 20, strokeWidth: 2 },
+  md: { width: 24, height: 24, strokeWidth: 2.5 },
+  lg: { width: 32, height: 32, strokeWidth: 3 },
+  xl: { width: 40, height: 40, strokeWidth: 3.5 },
+  xxl: { width: 48, height: 48, strokeWidth: 4 },
+};
+
+export function ShieldOff({ size = 'md', strokeWidth, ...props }: IconProps) {
+  const dimensions = DIMENSIONS[size];
+
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width={dimensions.width}
+      height={dimensions.height}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={strokeWidth ?? dimensions.strokeWidth}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      {...props}
+    >
+      <path d="M19.69 14a6.9 6.9 0 0 0 .31-2V5l-8-3-3.16 1.18"></path><path d="M4.73 4.73L4 5v7c0 6 8 10 8 10a20.29 20.29 0 0 0 5.62-4.38"></path><line x1="1" y1="1" x2="23" y2="23"></line>
+    </svg>
+  );
+}

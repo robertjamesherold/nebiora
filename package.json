@@ -13,6 +13,8 @@
     "dev:backend": "npm run dev -w backend",
     "build": "npm run build --workspaces --if-present",
     "deploy:backend": "npm run deploy -w backend",
+    "deploy:frontend": "npm run deploy -w frontend",
+    "deploy": "npm run deploy --workspaces --if-present",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",

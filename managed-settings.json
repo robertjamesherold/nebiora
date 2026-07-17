@@ -15,14 +15,14 @@
         "ask": [
             "Bash(git push*)",
             "Bash(docker run*)",
-            "Bash(pnpm exec*)"
+            "Bash(npm exec*)"
         ],
         "allow": [
             "Bash(git diff*)",
             "Bash(git log*)",
-            "Bash(pnpm test*)",
-            "Bash(pnpm lint*)",
-            "Bash(pnpm build*)"
+            "Bash(npm test*)",
+            "Bash(npm lint*)",
+            "Bash(npm build*)"
         ]
     },
     "enabledMcpServers": [

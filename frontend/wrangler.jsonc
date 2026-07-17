@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "nebiora",
+  "name": "nebiora-frontend",
   "compatibility_date": "2026-07-17",
   "assets": {
     // The site is a React Router SPA — unmatched paths (e.g. /leistungen/webdesign

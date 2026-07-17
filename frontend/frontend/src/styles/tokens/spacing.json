@@ -1,5 +1,0 @@
-{
-  "spacing": {
-    "base": { "$type": "dimension", "$value": "0.25rem" }
-  }
-}

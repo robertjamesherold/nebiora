@@ -1,5 +1,3 @@
-import Components from '@components';
-
 import Ui from '@/ui';
 
 import { HeroData } from './';

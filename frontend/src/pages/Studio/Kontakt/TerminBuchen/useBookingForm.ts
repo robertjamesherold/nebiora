@@ -116,12 +116,14 @@ const useBookingForm = (errorMessage: string, turnstileToken: string | null) => 
       const body = (await response.json().catch(() => null)) as { error?: string } | null;
 
       if (!response.ok) {
-        throw new Error(body?.error ?? 'Request failed');
+        setSubmitError(body?.error ?? errorMessage);
+        return;
       }
 
       setSent(true);
-    } catch (err) {
-      setSubmitError(err instanceof Error && err.message !== 'Request failed' ? err.message : errorMessage);
+    } catch {
+      // Genuine network failure (fetch itself rejected) — no backend message to show.
+      setSubmitError(errorMessage);
     } finally {
       setSending(false);
     }

@@ -20,7 +20,10 @@ const CAL_BOOKINGS_API_VERSION = '2026-02-25';
 const TURNSTILE_VERIFY_URL = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
 
 const verifyTurnstile = async (token: unknown, secret: string, remoteip: string | null) => {
-  if (typeof token !== 'string' || token === '') return false;
+  if (typeof token !== 'string' || token === '') {
+    console.error('Turnstile verification skipped: no token in payload');
+    return false;
+  }
 
   const response = await fetch(TURNSTILE_VERIFY_URL, {
     method: 'POST',
@@ -32,7 +35,10 @@ const verifyTurnstile = async (token: unknown, secret: string, remoteip: string 
     }),
   });
 
-  const result = (await response.json()) as { success: boolean };
+  const result = (await response.json()) as { success: boolean; 'error-codes'?: string[] };
+  if (!result.success) {
+    console.error('Turnstile verification failed', JSON.stringify(result['error-codes'] ?? []));
+  }
   return result.success;
 };
 

@@ -66,7 +66,7 @@ describe('ContactForm', () => {
   });
 
   it('shows an error message referencing the contact email when submission fails', async () => {
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: false }));
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: false, json: () => Promise.resolve({}) }));
     const user = userEvent.setup();
 
     render(

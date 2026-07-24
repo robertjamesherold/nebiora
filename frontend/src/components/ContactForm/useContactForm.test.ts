@@ -77,7 +77,7 @@ describe('useContactForm', () => {
   });
 
   it('surfaces a fallback error message referencing the contact email when the request fails', async () => {
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: false }));
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: false, json: () => Promise.resolve({}) }));
 
     const { result } = renderHook(() =>
       useContactForm({ contactEmail: 'hi@example.com', fields: ['Name', 'E-Mail', 'Nachricht'], turnstileToken: 'test-token' }),
@@ -88,6 +88,24 @@ describe('useContactForm', () => {
     expect(result.current.sent).toBe(false);
     expect(result.current.sending).toBe(false);
     expect(result.current.error).toContain('hi@example.com');
+  });
+
+  it('surfaces the backend-provided error message when the response includes one', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: false,
+        json: () => Promise.resolve({ error: 'Sicherheitsprüfung fehlgeschlagen.' }),
+      }),
+    );
+
+    const { result } = renderHook(() =>
+      useContactForm({ contactEmail: 'hi@example.com', fields: ['Name', 'E-Mail', 'Nachricht'], turnstileToken: 'test-token' }),
+    );
+
+    await submitForm(result);
+
+    expect(result.current.error).toBe('Sicherheitsprüfung fehlgeschlagen.');
   });
 
   it('surfaces the same fallback error when the network request throws', async () => {

@@ -42,6 +42,8 @@ const useContactForm = ({ contactEmail, fields, messagePrefix, turnstileToken }:
       .filter(Boolean)
       .join('\n\n');
 
+    const fallbackMessage = `Ihre Nachricht konnte nicht gesendet werden. Bitte schreiben Sie uns direkt an ${contactEmail}.`;
+
     try {
       const response = await fetch(CONTACT_API_URL, {
         method: 'POST',
@@ -50,14 +52,15 @@ const useContactForm = ({ contactEmail, fields, messagePrefix, turnstileToken }:
       });
 
       if (!response.ok) {
-        throw new Error('Request failed');
+        const body = (await response.json().catch(() => null)) as { error?: string } | null;
+        setError(body?.error ?? fallbackMessage);
+        return;
       }
 
       setSent(true);
     } catch {
-      setError(
-        `Ihre Nachricht konnte nicht gesendet werden. Bitte schreiben Sie uns direkt an ${contactEmail}.`,
-      );
+      // Genuine network failure (fetch itself rejected) — no backend message to show.
+      setError(fallbackMessage);
     } finally {
       setSending(false);
     }

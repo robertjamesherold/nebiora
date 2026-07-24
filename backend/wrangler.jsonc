@@ -10,6 +10,9 @@
     "CAL_USERNAME": "nebiora",
     "CAL_EVENT_SLUG": "buchungen",
   },
+  "observability": {
+    "enabled": true,
+  },
   // RESEND_API_KEY and CAL_API_KEY are secrets, not vars — set them with:
   //   npx wrangler secret put RESEND_API_KEY
   //   npx wrangler secret put CAL_API_KEY

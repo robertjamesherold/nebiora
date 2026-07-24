@@ -12,6 +12,7 @@
     "test": "vitest run"
   },
   "devDependencies": {
+    "typescript": "^6.0.3",
     "vitest": "^3.2.7",
     "wrangler": "^4.110.0"
   }

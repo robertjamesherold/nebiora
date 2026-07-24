@@ -7,7 +7,7 @@ import type { FAQAccordionProps } from './FAQAccordion.types';
 const FAQAccordion = ({ items, className = '' }: FAQAccordionProps) => (
   <div className={`flex flex-col gap-4 ${className}`}>
     {items.map((item) => (
-      <Ui.Card key={item.question} className="overflow-hidden p-0">
+      <Ui.Card key={item.question} className="overflow-hidden p-0 glass-panel">
         <details className="group">
           <summary className="flex cursor-pointer list-none items-center justify-between gap-4 p-6 [&::-webkit-details-marker]:hidden">
             <Ui.Text as="h3" variant="h4" text={item.question} />

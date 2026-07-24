@@ -9,7 +9,8 @@ const HeroData: HeroProps = {
   buttons: [
     {
       container: 'link',
-      to: '/studio/kontakt',
+      to: '/studio/kontakt#booking',
+
       label: 'Erstgespräch vereinbaren',
       variant: 'primary',
     },

@@ -5,7 +5,7 @@ const HeroData: HeroProps = {
   eyebrow: 'Studio',
   heading: ['Ein kleines Studio mit', 'großem Anspruch.'],
   description:
-    'Wir sind ein festes, kleines Team für Design, Entwicklung und digitale Strategie — keine Sub-Agenturen, keine wechselnden Ansprechpartner, keine anonymen Ticket-Systeme. Nur Menschen, die Ihr Projekt von der ersten Skizze bis zum laufenden Betrieb selbst verantworten.',
+    'Nebiora.studio entwickelt Website, Branding und digitale Strategie aus einer Hand — durchdacht, schnell und mit einem Auftritt, der bleibt. Wir sind ein kleines, unabhängiges Studio, das sich bewusst auf die Zusammenarbeit mit einem einzigen Ansprechpartner pro Projekt konzentriert. So können wir in Wochen statt Monaten liefern, Feedback direkt umsetzen und Verantwortung übernehmen, statt sie zu verwalten.',
 };
 
 export default HeroData;

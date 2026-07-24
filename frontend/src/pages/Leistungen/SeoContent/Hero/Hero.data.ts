@@ -8,7 +8,6 @@ const HeroData: HeroProps = {
     'Wir verbinden technisches SEO mit durchdachter Content-Strategie, damit Ihre Website nicht nur gefunden, sondern auch gelesen und verstanden wird.',
   buttons: [
     { container: 'link', to: '/studio/kontakt', label: 'Projekt starten', variant: 'primary' },
-    { container: 'link', to: '/studio/projekte', label: 'Referenzen ansehen', variant: 'secondary' },
   ],
 };
 

@@ -59,7 +59,7 @@ const TerminBuchen = () => {
   const hasAnySlotsThisMonth = grid.some((day) => day.inCurrentMonth && day.hasSlots);
 
   return (
-    <section className="px-6 py-20 sm:py-28">
+    <section id="booking" className="px-6 py-20 sm:py-28">
       <div className="mx-auto max-w-6xl">
         <Components.SectionHeading
           category={TerminBuchenData.category}
@@ -68,7 +68,7 @@ const TerminBuchen = () => {
         />
 
         <Ui.Card glass className="mt-14 overflow-hidden flex flex-col lg:grid lg:grid-cols-[260px_1fr_1fr] lg:grid-rows-[400px] lg:gap-0">
-          <div className="contents lg:grid lg:grid-rows-2">
+         {!sent && !loadError && <div className="contents lg:grid lg:grid-rows-2">
           <div className="order-1 border-b border-ink-800 p-6 sm:p-8 lg:order-0 lg:border-r lg:border-b-0 lg:p-5">
             <Ui.Text as="h3" variant="h3" text={TerminBuchenData.eventTitle} />
             <div className="mt-4 flex flex-col gap-3 text-sm text-ink-300 lg:mt-3 lg:gap-2">
@@ -104,15 +104,15 @@ const TerminBuchen = () => {
                   </div>
                 )}
                 </div>
-          </div>
+          </div>}
 
           <div
             className={`order-2 p-6 sm:p-8 lg:order-0 lg:border-ink-800 lg:p-5 ${
-              sent || loadError ? 'lg:col-span-2' : 'lg:border-r'
+              sent || loadError ? 'lg:col-span-3' : 'lg:border-r'
             }`}
           >
             {sent ? (
-              <div className="flex min-h-64 flex-col items-center justify-center gap-6 text-center">
+              <div className="flex min-h-64 flex-col items-center justify-center gap-6 text-center h-full">
                 <Ui.Icon strokeWidth={2.5} className="size-16 text-brand-300">
                   <path d="M4 12.5L9.5 18L20 6" strokeLinecap="round" strokeLinejoin="round" />
                 </Ui.Icon>

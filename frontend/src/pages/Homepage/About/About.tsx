@@ -16,8 +16,8 @@ const About = () => {
           />
 
           <Ui.Buttons
-            container="anchor"
-            href={AboutData.buttonLink}
+            container="link"
+            to={AboutData.buttonLink}
             label={AboutData.buttonText}
             variant="primary"
             size="small"

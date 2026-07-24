@@ -15,7 +15,6 @@ const NotFound = () => (
       heading="Zurück zu vertrautem Terrain."
       buttons={[
         { label: 'Zur Startseite', variant: 'primary', container: 'link', to: '/' },
-        { label: 'Projekte entdecken', variant: 'secondary', container: 'link', to: '/studio/projekte' },
       ]}
     />
   </main>

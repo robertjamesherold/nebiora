@@ -6,7 +6,7 @@ type HeroProps = {
     text: string;
     link: string;
     variant: 'primary' | 'secondary';
-    container: 'anchor';
+    container: 'link';
   }[];
 
 };

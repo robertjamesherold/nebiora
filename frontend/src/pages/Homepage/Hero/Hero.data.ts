@@ -8,9 +8,9 @@ const HeroData: HeroProps = {
   button: [
     {
       text: 'Kostenloses Erstgespräch',
-      link: '#kontakt',
+      link: '/studio/kontakt#booking',
       variant: 'primary',
-      container: 'anchor',
+      container: 'link',
     },
 
   ],

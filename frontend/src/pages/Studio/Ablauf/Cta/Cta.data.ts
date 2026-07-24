@@ -7,7 +7,7 @@ const CtaData: CtaProps = {
   buttons: [
     {
       container: 'link',
-      to: '/studio/kontakt',
+      to: '/studio/kontakt#booking',
       label: 'Kostenloses Erstgespräch',
       variant: 'primary',
     },

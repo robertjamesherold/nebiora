@@ -6,7 +6,7 @@ const AboutData: AboutProps = {
   description:
     'Nebiora.studio wurde gegründet, weil Unternehmen für einen professionellen Onlineauftritt zu oft zwischen Agentur, Freelancer und Baukasten hin- und herspringen müssen. Wir bündeln Design, Entwicklung und Strategie in einem Team — damit Ihr Projekt aus einem Guss bleibt, von der ersten Idee bis zum täglichen Betrieb.',
   buttonText: 'Lernen Sie uns kennen',
-  buttonLink: '#kontakt',
+  buttonLink: '/studio/ueber-uns',
 
   cards: [
     {

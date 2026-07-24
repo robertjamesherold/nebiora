@@ -12,7 +12,6 @@ const UeberUns = () => {
       <UeberUnsSections.Hero />
       <UeberUnsSections.Story />
       <UeberUnsSections.Team />
-      <UeberUnsSections.Stats />
       <UeberUnsSections.Cta />
     </main>
   );

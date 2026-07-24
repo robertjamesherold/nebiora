@@ -8,7 +8,6 @@ const HeroData: HeroProps = {
     'Wir gestalten und entwickeln Onlineshops, die vom ersten Klick bis zum Checkout überzeugen — ohne Reibungsverluste, mit Fokus auf Conversion.',
   buttons: [
     { container: 'link', to: '/studio/kontakt', label: 'Projekt starten', variant: 'primary' },
-    { container: 'link', to: '/studio/projekte', label: 'Referenzen ansehen', variant: 'secondary' },
   ],
 };
 

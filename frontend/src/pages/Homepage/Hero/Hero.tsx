@@ -17,7 +17,7 @@ const Hero = () => {
             <Ui.Buttons
               key={button.text}
               container={button.container}
-              href={button.link}
+              to={button.link}
               label={button.text}
               variant={button.variant}
             />

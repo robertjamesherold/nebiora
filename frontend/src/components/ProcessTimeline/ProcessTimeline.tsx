@@ -11,7 +11,7 @@ const ProcessTimeline = ({
 
   return (
     <ol
-      className={`flex flex-col gap-10 ${isHorizontal ? 'md:flex-row md:gap-6' : ''} ${className}`}
+      className={`flex flex-col gap-10 ${isHorizontal ? 'lg:flex-row md:gap-6' : ''} ${className}`}
     >
       {steps.map((step, index) => {
         const isLast = index === steps.length - 1;
@@ -21,7 +21,7 @@ const ProcessTimeline = ({
             key={step.title}
             className={
               isHorizontal
-                ? 'relative flex flex-1 flex-col items-start gap-4 overflow-visible'
+                ? 'relative flex flex-1 flex-col items-center lg:items-start gap-4 overflow-visible'
                 : 'relative flex gap-6 overflow-visible'
             }
           >
@@ -30,8 +30,8 @@ const ProcessTimeline = ({
                 aria-hidden="true"
                 className={
                   isHorizontal
-                    ? 'absolute top-6 left-6 hidden h-px w-[calc(100%+1.5rem)] bg-ink-800 md:block '
-                    : 'absolute top-12 left-6 h-[calc(100%-0.5rem)] w-px bg-ink-800 '
+                    ? 'absolute top-6 left-6 hidden h-px w-[calc(100%+1.5rem)] bg-ink-800 lg:block '
+                    : 'absolute top-12 left-6 h-[calc(100%+1rem)] w-px bg-ink-800 '
                 }
               />
             )}
@@ -48,9 +48,9 @@ const ProcessTimeline = ({
                 />
               )}
             </div>
-            <div className={isHorizontal ? 'flex flex-col' : 'flex flex-col justify-center'}>
+            <div className={isHorizontal ? 'flex flex-col text-center lg:text-left' : 'flex flex-col justify-center'}>
               <Ui.Text as="h3" variant="h3" text={step.title} />
-              <Ui.Text variant="body" className="mt-1 leading-relaxed" text={step.description} />
+              <Ui.Text variant="body" className="mt-1 leading-relaxed max-w-sm lg:max-w-fit" text={step.description} />
             </div>
           </li>
         );

@@ -1,3 +1,5 @@
+import Robert from '@assets/images/Robert-James-Herold_Portrait.png';
+
 import type { TeamProps } from './Team.types';
 
 const TeamData: TeamProps = {
@@ -6,28 +8,10 @@ const TeamData: TeamProps = {
   description: 'Vier Spezialist:innen, ein gemeinsamer Anspruch — jedes Projekt so zu betreuen, als wäre es unser eigenes.',
   members: [
     {
-      name: 'Julia Falk',
-      role: 'Gründerin & Creative Direction',
-      photo: 'https://picsum.photos/seed/team-julia/600/600',
-      bio: 'Verantwortet Design und Markenführung — mit einem Blick für Details, die den Unterschied machen.',
-    },
-    {
-      name: 'Tobias Reinhardt',
-      role: 'Lead Developer',
-      photo: 'https://picsum.photos/seed/team-tobias/600/600',
-      bio: 'Baut schnelle, wartbare Systeme und sorgt dafür, dass aus Entwürfen stabile Produkte werden.',
-    },
-    {
-      name: 'Nora Vogel',
-      role: 'UX/UI Design',
-      photo: 'https://picsum.photos/seed/team-nora/600/600',
-      bio: 'Gestaltet Nutzererlebnisse, die intuitiv wirken, weil sie gründlich durchdacht sind.',
-    },
-    {
-      name: 'Simon Achterberg',
-      role: 'Projektmanagement',
-      photo: 'https://picsum.photos/seed/team-simon/600/600',
-      bio: 'Hält Zeitpläne, Budgets und Kommunikation zusammen — ruhig, verlässlich, transparent.',
+      name: 'Robert James Herold',
+      role: 'Gründer & Creative Direction',
+      photo: Robert,
+      bio: 'BA in Mediendesign, spezialisiert UX/UI Design und digitale Strategie. Robert ist der kreative Kopf hinter Nebiora.studio und sorgt dafür, dass jedes Projekt eine klare visuelle Identität erhält.',
     },
   ],
 };

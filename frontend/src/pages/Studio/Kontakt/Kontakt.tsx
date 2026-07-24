@@ -11,6 +11,7 @@ const Kontakt = () => {
       />
       <KontaktSections.Hero />
       <KontaktSections.ContactSection />
+      <KontaktSections.TerminBuchen />
       <KontaktSections.FAQ />
     </main>
   );

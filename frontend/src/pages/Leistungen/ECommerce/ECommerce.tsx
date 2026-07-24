@@ -14,7 +14,6 @@ const ECommerce = () => (
     <ECommerceSections.Prozess />
     <ECommerceSections.Technologien />
     <ECommerceSections.FAQ />
-    <ECommerceSections.Referenzen />
     <ECommerceSections.Cta />
   </main>
 );

@@ -6,7 +6,7 @@ import Ui from '@/ui';
 
 import type { PageHeroProps } from './PageHero.types';
 
-const PageHero = ({ breadcrumb, eyebrow, heading, description, buttons, stats, className = '' }: PageHeroProps) => (
+const PageHero = ({ logo, breadcrumb, eyebrow, heading, description, buttons, stats, className = '' }: PageHeroProps) => (
   <section className="px-6 pt-36 pb-20 sm:pt-40 sm:pb-24">
     <div className={`mx-auto max-w-6xl ${className}`}>
       {breadcrumb && (
@@ -38,7 +38,19 @@ const PageHero = ({ breadcrumb, eyebrow, heading, description, buttons, stats, c
         </nav>
       )}
       <Ui.Badge label={eyebrow} style="primary" className="mb-6" />
-      <Ui.Text as="h1" variant="h1" className="max-w-3xl" text={Array.isArray(heading) ? heading.join(' ') : heading} />
+      <Ui.Text as="h1" variant="h1" className="w-full">
+        {heading && Array.isArray(heading) ? (
+          <>
+            <span className="block">{heading[0]}</span>
+            <span className="block text-brand-500">{heading[1]}</span>
+          </>
+        ) : heading}
+        {logo && (
+          <div className="flex items-center">
+            {logo}
+          </div>
+        )}  
+      </Ui.Text>
       <Ui.Text variant="lead" className="mt-6 max-w-2xl" text={description} />
       {buttons && (
         <div className="mt-10 flex flex-wrap gap-4">
@@ -47,7 +59,7 @@ const PageHero = ({ breadcrumb, eyebrow, heading, description, buttons, stats, c
           ))}
         </div>
       )}
-      {stats && <Components.StatsGrid stats={stats} className="mt-16 max-w-2xl" />}
+      {stats && <Components.StatsGrid stats={stats} className="mt-16 max-w-2xl" /> }
     </div>
   </section>
 );

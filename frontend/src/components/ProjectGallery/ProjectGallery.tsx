@@ -97,7 +97,7 @@ const ProjectGallery = ({ images, className = '' }: ProjectGalleryProps) => {
           <img
             src={images[activeIndex].src}
             alt={images[activeIndex].alt}
-            className="max-h-[80vh] max-w-4xl rounded-sm object-contain"
+            className="max-h-[80vh] max-w-6xl rounded-sm object-contain"
             onClick={(event) => event.stopPropagation()}
           />
 

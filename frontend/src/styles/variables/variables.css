@@ -1,4 +1,13 @@
 @theme {
+  /* breakpoints.json */
+  --breakpoint-*: initial;
+  --breakpoint-xs: 24rem;
+  --breakpoint-sm: 32rem;
+  --breakpoint-md: 48rem;
+  --breakpoint-lg: 64rem;
+  --breakpoint-xl: 80rem;
+  --breakpoint-2xl: 96rem;
+
   /* color/accent.json */
   --color-accent-50: #fcdfed;
   --color-accent-100: #f9c8e0;

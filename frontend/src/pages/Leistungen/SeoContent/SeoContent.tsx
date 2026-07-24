@@ -14,7 +14,6 @@ const SeoContent = () => (
     <SeoContentSections.Prozess />
     <SeoContentSections.Technologien />
     <SeoContentSections.FAQ />
-    <SeoContentSections.Referenzen />
     <SeoContentSections.Cta />
   </main>
 );

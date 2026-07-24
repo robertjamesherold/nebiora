@@ -7,8 +7,49 @@ html {
   scroll-padding-top: 6rem;
 }
 
-body {
+body,
+html {
   overflow-x: hidden;
+}
+
+body,
+*,
+html {
+  font-family: var(--font-sans);
+  hyphens: 'auto';
+  -webkit-hyphens: 'auto';
+  text-wrap: 'balance';
+
+  @media screen and (width >= var(--breakpoint-xs)) {
+    hyphens: 'auto';
+    -webkit-hyphens: 'auto';
+    text-wrap: 'balance';
+  }
+  @media screen and (width >= var(--breakpoint-sm)) {
+    hyphens: 'auto';
+    -webkit-hyphens: 'auto';
+    text-wrap: 'balance';
+  }
+  @media screen and (width >= var(--breakpoint-md)) {
+    hyphens: 'auto';
+    -webkit-hyphens: 'auto';
+    text-wrap: 'balance';
+  }
+  @media screen and (width >= var(--breakpoint-lg)) {
+    hyphens: 'auto';
+    -webkit-hyphens: 'auto';
+    text-wrap: 'balance';
+  }
+  @media screen and (width >= var(--breakpoint-xl)) {
+    hyphens: 'auto';
+    -webkit-hyphens: 'auto';
+    text-wrap: 'balance';
+  }
+  @media screen and (width >= var(--breakpoint-2xl)) {
+    hyphens: 'auto';
+    -webkit-hyphens: 'auto';
+    text-wrap: 'balance';
+  }
 }
 
 /* Nebula backdrop: a fixed layer of drifting color clouds + a starfield,

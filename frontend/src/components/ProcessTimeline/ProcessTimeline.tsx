@@ -21,8 +21,8 @@ const ProcessTimeline = ({
             key={step.title}
             className={
               isHorizontal
-                ? 'relative flex flex-1 flex-col items-start gap-4'
-                : 'relative flex gap-6'
+                ? 'relative flex flex-1 flex-col items-start gap-4 overflow-visible'
+                : 'relative flex gap-6 overflow-visible'
             }
           >
             {!isLast && (
@@ -30,8 +30,8 @@ const ProcessTimeline = ({
                 aria-hidden="true"
                 className={
                   isHorizontal
-                    ? 'absolute top-6 left-6 hidden h-px w-[calc(100%+1.5rem)] bg-ink-800 md:block'
-                    : 'absolute top-12 left-6 h-[calc(100%+1rem)] w-px bg-ink-800'
+                    ? 'absolute top-6 left-6 hidden h-px w-[calc(100%+1.5rem)] bg-ink-800 md:block '
+                    : 'absolute top-12 left-6 h-[calc(100%-0.5rem)] w-px bg-ink-800 '
                 }
               />
             )}

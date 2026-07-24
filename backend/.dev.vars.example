@@ -9,3 +9,6 @@ RESEND_API_KEY=re_xxxxxxxxxxxxxxxxxxxxxxxxxxxx
 # Until you verify your own domain in Resend, you can only send test emails
 # from onboarding@resend.dev to the email address you signed up with.
 CONTACT_TO_ADDRESS=your-signup-address@example.com
+
+# cal.com API key (Settings → Security → API Keys in the cal.com dashboard).
+CAL_API_KEY=cal_live_xxxxxxxxxxxxxxxxxxxxxxxxxxxx

@@ -11,7 +11,6 @@ const Homepage = () => {
       />
       <HomepageSections.Hero />
       <HomepageSections.Services />
-      <HomepageSections.Portfolio />
       <HomepageSections.About />
       <HomepageSections.Contact />
     </main>

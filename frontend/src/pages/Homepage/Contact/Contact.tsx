@@ -8,7 +8,7 @@ const Contact = () => {
   return (
     <section id="kontakt" className="px-6 py-28">
       <div className="mx-auto max-w-6xl">
-        <Ui.Card className="grid grid-cols-1 gap-0 overflow-hidden lg:grid-cols-2">
+        <Ui.Card glass className="grid grid-cols-1 gap-0 overflow-hidden lg:grid-cols-2">
           <div className="relative flex flex-col justify-between  p-10 sm:p-12">
             <Components.SectionHeading
               category={ContactData.category}

@@ -8,7 +8,7 @@ const TextVariant = {
   h4: 'text-sm font-semibold ',
   eyebrow: 'text-sm font-medium tracking-wide text-brand-300 uppercase',
   eyebrowMuted: 'text-xs font-medium tracking-wide uppercase',
-  indexLabel: 'font-display text-4xl sfont-semibold text-brand-300/70',
+  indexLabel: 'font-display text-4xl font-semibold text-brand-300/70',
   lead: 'text-balance text-lg text-ink-200',
   body: 'text-sm text-ink-300 leading-normal',
   bodyMuted: 'text-sm text-ink-400',

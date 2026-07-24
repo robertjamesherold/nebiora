@@ -91,7 +91,7 @@ const NavDropdown = ({ label, items, variant = 'desktop', onLinkClick, className
         <div
           role="menu"
           aria-label={label}
-          className="glass-panel absolute top-full left-1/2 mt-3 w-56 -translate-x-1/2 rounded-sm border border-ink-800/60 p-2"
+          className="glass-panel absolute top-full left-1/2 z-50 mt-8 w-56 -translate-x-1/2 rounded-sm border border-ink-800/60 p-2"
         >
           {items.map((item) => (
             <Link

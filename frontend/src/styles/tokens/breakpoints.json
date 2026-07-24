@@ -1,0 +1,32 @@
+{
+    "breakpoint": {
+        "*": {
+            "$type": "breakpoint",
+            "$value": "initial"
+        },
+        "xs": {
+            "$type": "breakpoint",
+            "$value": "24rem"
+        },
+        "sm": {
+            "$type": "breakpoint",
+            "$value": "32rem"
+        },
+        "md": {
+            "$type": "breakpoint",
+            "$value": "48rem"
+        },
+        "lg": {
+            "$type": "breakpoint",
+            "$value": "64rem"
+        },
+        "xl": {
+            "$type": "breakpoint",
+            "$value": "80rem"
+        },
+        "2xl": {
+            "$type": "breakpoint",
+            "$value": "96rem"
+        }
+    }
+}

@@ -7,8 +7,11 @@
     "ALLOWED_ORIGIN": "https://nebiora.studio",
     "CONTACT_TO_ADDRESS": "hallo@nebiora.studio",
     "CONTACT_FROM_ADDRESS": "onboarding@resend.dev",
+    "CAL_USERNAME": "nebiora",
+    "CAL_EVENT_SLUG": "buchungen",
   },
-  // RESEND_API_KEY is a secret, not a var — set it with:
+  // RESEND_API_KEY and CAL_API_KEY are secrets, not vars — set them with:
   //   npx wrangler secret put RESEND_API_KEY
-  // and for local dev, add it to backend/.dev.vars (gitignored).
+  //   npx wrangler secret put CAL_API_KEY
+  // and for local dev, add both to backend/.dev.vars (gitignored).
 }

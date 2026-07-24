@@ -8,6 +8,6 @@ type CardProps = {
   hover?: boolean;
   className?: string;
   children: ReactNode;
-};
+} & React.HTMLAttributes<HTMLElement>
 
 export type { CardProps };

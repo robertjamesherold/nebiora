@@ -14,7 +14,6 @@ const Entwicklung = () => (
     <EntwicklungSections.Prozess />
     <EntwicklungSections.Technologien />
     <EntwicklungSections.FAQ />
-    <EntwicklungSections.Referenzen />
     <EntwicklungSections.Cta />
   </main>
 );

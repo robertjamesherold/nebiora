@@ -1,6 +1,10 @@
 import React from 'react';
 
-const CONTACT_API_URL = import.meta.env.VITE_CONTACT_API_URL ?? 'http://localhost:8787/api/contact';
+// Falls back to the current page's own hostname (not a hardcoded "localhost")
+// so this also works when the dev server is opened via --host from another
+// device on the LAN, where "localhost" would resolve to that device itself.
+const CONTACT_API_URL =
+  import.meta.env.VITE_CONTACT_API_URL ?? `http://${window.location.hostname}:8787/api/contact`;
 
 type UseContactFormArgs = {
   contactEmail: string;

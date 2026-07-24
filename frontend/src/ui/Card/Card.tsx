@@ -11,6 +11,7 @@ const Card = ({
   hover = false,
   className = '',
   children,
+  ...props
 }: CardProps) => {
   const classes = [
     CardVariant.base,
@@ -23,19 +24,21 @@ const Card = ({
 
   if (as === 'a') {
     return (
-      <a href={href} className={classes}>
+      <a href={href} className={classes} {...props}>
         {children}
       </a>
     );}
     
       if (as === 'Link' && to) {
     return (
-     <Link to={to} className={classes}>
+     <Link to={to} className={classes} {...props}>
         {children}
       </Link>
     );}
 
-  return <div className={classes}>{children}</div>;
+  return <div className={classes} {...props}>
+    {children}
+  </div>;
 };
 
 export default Card;

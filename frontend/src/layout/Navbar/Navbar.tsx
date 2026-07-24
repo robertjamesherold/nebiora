@@ -29,14 +29,10 @@ const NAV_CONFIG: NavEntry[] = [
     label: 'Studio',
     items: [
       { to: '/studio/ueber-uns', label: 'Über uns' },
-      { to: '/studio/projekte', label: 'Projekte' },
-      { to: '/studio/karriere', label: 'Karriere' },
       { to: '/studio/kontakt', label: 'Kontakt' },
+      { to: '/studio/ablauf', label: 'Ablauf' },
     ],
-  },
-  { to: '/ablauf', label: 'Ablauf' },
-  { to: '/studio/kontakt', label: 'Kontakt' },
-];
+  },];
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -52,13 +48,16 @@ const Navbar = () => {
   return (
     <header className="fixed inset-x-0 top-0 z-50 transition-all duration-300 py-5">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6">
-        <nav
-          className={`flex w-full items-center justify-between rounded-sm border px-5 py-2.5 transition-all duration-300 ${
-            scrolled || menuOpen
-              ? 'glass-panel border-ink-800/60'
-              : 'border-transparent bg-transparent'
-          }`}
-        >
+        <nav className="relative flex w-full items-center justify-between rounded-sm px-5 py-2.5">
+          <div
+            aria-hidden="true"
+            className={`pointer-events-none absolute inset-0 -z-10 rounded-sm border transition-all duration-300 ${
+              scrolled || menuOpen
+                ? 'glass-panel border-ink-800/60'
+                : 'border-transparent bg-transparent'
+            }`}
+          />
+
           <Link to="/" className="flex items-center gap-2">
             <Suspense fallback={<span className="block h-8 w-34" />}>
               <Logo size={16} />

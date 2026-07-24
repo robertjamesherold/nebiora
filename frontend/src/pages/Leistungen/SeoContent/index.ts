@@ -3,7 +3,6 @@ import Cta from './Cta';
 import FAQ from './FAQ';
 import Hero from './Hero';
 import Prozess from './Prozess';
-import Referenzen from './Referenzen';
 import SeoContent from './SeoContent';
 import Technologien from './Technologien';
 import Vorteile from './Vorteile';
@@ -14,7 +13,6 @@ const SeoContentSections = {
   FAQ,
   Hero,
   Prozess,
-  Referenzen,
   Technologien,
   Vorteile,
 };

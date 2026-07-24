@@ -3,7 +3,6 @@ import Cta from './Cta';
 import FAQ from './FAQ';
 import Hero from './Hero';
 import Prozess from './Prozess';
-import Referenzen from './Referenzen';
 import Technologien from './Technologien';
 import Vorteile from './Vorteile';
 import Webdesign from './Webdesign';
@@ -14,7 +13,6 @@ const WebdesignSections = {
   FAQ,
   Hero,
   Prozess,
-  Referenzen,
   Technologien,
   Vorteile,
 };

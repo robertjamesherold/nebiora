@@ -1,5 +1,5 @@
 const CardVariant = {
-  base: 'rounded-sm ring-1 hover:ring-brand-700 hover:border-brand-800 hover:ring-offset-2 transition-all duration-500 ease-in-out bg-space-800/30 backdrop-blur-3xl ',
+  base: 'rounded-md border-1 border-brand-50/30 hover:border-brand-50/60 transition-colors duration-500 ease-in-out  ',
   glass: 'glass-panel',
   hover: 'card-hover',
 } as const;

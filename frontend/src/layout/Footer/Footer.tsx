@@ -21,9 +21,8 @@ const COLUMNS = [
     title: 'Studio',
     links: [
       { label: 'Über uns', to: '/studio/ueber-uns' },
-      { label: 'Projekte', to: '/studio/projekte' },
-      { label: 'Karriere', to: '/studio/karriere' },
       { label: 'Kontakt', to: '/studio/kontakt' },
+      { label: 'Ablauf', to: '/studio/ablauf' },
     ],
   },
   {
@@ -38,7 +37,7 @@ const COLUMNS = [
 
 const Footer = () => {
   return (
-    <footer className="border-t border-ink-800/60 px-6 py-16">
+    <footer className="glass-panel border-t border-ink-800/60 px-6 py-16">
       <div className="mx-auto max-w-6xl">
         <div className="grid grid-cols-1 gap-12 sm:grid-cols-2 lg:grid-cols-4">
           <div>

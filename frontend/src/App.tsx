@@ -1,32 +1,17 @@
 import Layout from '@layout';
 import Pages from '@pages';
-import { Suspense, useEffect } from 'react';
-import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
+import LoadingScreenPage from '@pages/LoadingScreenPage';
+import { Suspense } from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
-const ScrollToTop = () => {
-  const { pathname } = useLocation();
-
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [pathname]);
-
-  return null;
-};
 
 const App = () => {
   return (
     <Router>
-      <ScrollToTop />
-      <a
-        href="#main-content"
-        className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:rounded focus:bg-white focus:px-4 focus:py-2 focus:text-black"
-      >
-        Zum Inhalt springen
-      </a>
+      <Layout.ScrollToTop />
       <Layout.Background />
       <Layout.Navbar />
-      <main id="main-content" tabIndex={-1}>
-        <Suspense fallback={<div className="min-h-screen" />}>
+        <Suspense fallback={<LoadingScreenPage />}>
           <Routes>
             <Route path="/" element={<Pages.Homepage />} />
 
@@ -37,12 +22,9 @@ const App = () => {
             <Route path="/leistungen/e-commerce" element={<Pages.ECommerce />} />
 
             <Route path="/studio/ueber-uns" element={<Pages.UeberUns />} />
-            <Route path="/studio/projekte" element={<Pages.Projekte />} />
-            <Route path="/studio/karriere" element={<Pages.Karriere />} />
             <Route path="/studio/kontakt" element={<Pages.Kontakt />} />
+            <Route path="/studio/ablauf" element={<Pages.Ablauf />} />
 
-            <Route path="/projekte/:slug" element={<Pages.ProjektDetail />} />
-            <Route path="/ablauf" element={<Pages.Ablauf />} />
 
             <Route path="/impressum" element={<Pages.Impressum />} />
             <Route path="/datenschutz" element={<Pages.Datenschutz />} />
@@ -51,7 +33,6 @@ const App = () => {
             <Route path="*" element={<Pages.NotFound />} />
           </Routes>
         </Suspense>
-      </main>
       <Layout.Footer />
     </Router>
   );

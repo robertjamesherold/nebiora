@@ -14,7 +14,6 @@ const Webdesign = () => (
     <WebdesignSections.Prozess />
     <WebdesignSections.Technologien />
     <WebdesignSections.FAQ />
-    <WebdesignSections.Referenzen />
     <WebdesignSections.Cta />
   </main>
 );

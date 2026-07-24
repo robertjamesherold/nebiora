@@ -10,7 +10,8 @@ type PageHeroBreadcrumbItem = {
 type PageHeroProps = {
   breadcrumb?: PageHeroBreadcrumbItem[];
   eyebrow: string;
-  heading: string | [string, string];
+  heading?: string | [string, string];
+  logo?: React.ReactNode;
   description: string;
   buttons?: ButtonsProps[];
   stats?: Stat[];

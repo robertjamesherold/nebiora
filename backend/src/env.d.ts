@@ -1,6 +1,8 @@
-// RESEND_API_KEY is a secret (set via `wrangler secret put`), so it isn't
-// declared in wrangler.jsonc and isn't picked up by `wrangler types`.
-// This augments the generated ambient `Env` interface with it.
+// RESEND_API_KEY and CAL_API_KEY are secrets (set via `wrangler secret put`),
+// so they aren't declared in wrangler.jsonc and aren't picked up by
+// `wrangler types`. This augments the generated ambient `Env` interface
+// with them.
 interface Env {
   RESEND_API_KEY: string;
+  CAL_API_KEY: string;
 }

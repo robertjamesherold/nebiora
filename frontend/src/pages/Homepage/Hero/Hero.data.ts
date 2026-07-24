@@ -12,12 +12,7 @@ const HeroData: HeroProps = {
       variant: 'primary',
       container: 'anchor',
     },
-    {
-      text: 'Projekte entdecken',
-      link: '#projekte',
-      variant: 'secondary',
-      container: 'anchor',
-    },
+
   ],
   STATS: [
     { value: '120+', label: 'Projekte realisiert' },

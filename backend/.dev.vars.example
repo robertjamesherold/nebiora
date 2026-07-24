@@ -12,3 +12,7 @@ CONTACT_TO_ADDRESS=your-signup-address@example.com
 
 # cal.com API key (Settings → Security → API Keys in the cal.com dashboard).
 CAL_API_KEY=cal_live_xxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+# Cloudflare Turnstile secret key for the widget covering localhost/127.0.0.1/nebiora.studio
+# (dash.cloudflare.com → Turnstile). Never the sitekey — that one's public and lives in the frontend.
+TURNSTILE_SECRET=0x4xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx

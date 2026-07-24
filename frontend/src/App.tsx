@@ -21,6 +21,8 @@ const App = () => {
             <Route path="/leistungen/seo-content" element={<Pages.SeoContent />} />
             <Route path="/leistungen/e-commerce" element={<Pages.ECommerce />} />
 
+            <Route path="/angebote" element={<Pages.Angebote />} />
+
             <Route path="/studio/ueber-uns" element={<Pages.UeberUns />} />
             <Route path="/studio/kontakt" element={<Pages.Kontakt />} />
             <Route path="/studio/ablauf" element={<Pages.Ablauf />} />

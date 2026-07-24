@@ -1,6 +1,7 @@
 import { lazy } from 'react';
 
 const Homepage = lazy(() => import('./Homepage'));
+const Angebote = lazy(() => import('./Angebote'));
 const Ablauf = lazy(() => import('./Studio/Ablauf'));
 const AGB = lazy(() => import('./Legal/AGB'));
 const Datenschutz = lazy(() => import('./Legal/Datenschutz'));
@@ -15,6 +16,7 @@ const Kontakt = lazy(() => import('./Studio/Kontakt'));
 const UeberUns = lazy(() => import('./Studio/UeberUns'));
 
 const Pages = {
+  Angebote,
   Ablauf,
   AGB,
   Branding,

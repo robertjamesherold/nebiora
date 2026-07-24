@@ -25,6 +25,7 @@ const NAV_CONFIG: NavEntry[] = [
       { to: '/leistungen/e-commerce', label: 'E-Commerce' },
     ],
   },
+  { to: '/angebote', label: 'Angebote' },
   {
     label: 'Studio',
     items: [

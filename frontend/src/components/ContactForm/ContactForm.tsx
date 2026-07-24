@@ -1,3 +1,4 @@
+import Hooks from '@/hooks';
 import Ui from '@/ui';
 
 import type { ContactFormProps } from './ContactForm.types';
@@ -12,10 +13,12 @@ const ContactForm = ({
   messagePrefix,
   className = '',
 }: ContactFormProps) => {
+  const { containerRef: turnstileRef, token: turnstileToken } = Hooks.useTurnstile();
   const { values, setValue, sent, sending, error, handleSubmit } = useContactForm({
     contactEmail,
     fields: fields.map((field) => field.label),
     messagePrefix,
+    turnstileToken,
   });
 
   if (sent) {
@@ -34,19 +37,32 @@ const ContactForm = ({
 
   return (
     <form onSubmit={handleSubmit} className={`flex flex-col gap-5 ${className}`}>
-      {fields.map((field) => (
-        <Ui.Input
-          key={field.label}
-          label={field.label}
-          placeholder={field.placeholder}
-          value={values[field.label]}
-          onChange={setValue(field.label)}
-          required
-          type={field.type}
-          as={field.as}
-          rows={field.rows}
-        />
-      ))}
+      {fields.map((field) =>
+        field.as === 'checkbox' ? (
+          <Ui.Input
+            key={field.label}
+            as="checkbox"
+            label={field.consentText ?? field.label}
+            checked={values[field.label] === 'true'}
+            onCheckedChange={(checked) => setValue(field.label)(checked ? 'true' : '')}
+            required
+          />
+        ) : (
+          <Ui.Input
+            key={field.label}
+            label={field.label}
+            placeholder={field.placeholder}
+            value={values[field.label]}
+            onChange={setValue(field.label)}
+            required
+            type={field.type}
+            as={field.as}
+            rows={field.rows}
+          />
+        ),
+      )}
+
+      <div ref={turnstileRef} />
 
       <Ui.Buttons
         type="submit"
@@ -54,7 +70,7 @@ const ContactForm = ({
         label={sending ? 'Wird gesendet…' : submitLabel}
         variant="primary"
         size="sm"
-        disabled={sending}
+        disabled={sending || !turnstileToken}
         className="mt-2"
       />
 

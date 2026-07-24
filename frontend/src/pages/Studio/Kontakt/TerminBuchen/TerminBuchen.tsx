@@ -1,6 +1,7 @@
 import Components from '@components';
 import Icons from '@icons';
 
+import Hooks from '@/hooks';
 import Ui from '@/ui';
 
 import type { CalendarDay } from './calendarGrid';
@@ -26,6 +27,7 @@ const timeChipClasses = (active: boolean) =>
   }`;
 
 const TerminBuchen = () => {
+  const { containerRef: turnstileRef, token: turnstileToken } = Hooks.useTurnstile();
   const {
     visibleMonth,
     canGoToPreviousMonth,
@@ -53,7 +55,7 @@ const TerminBuchen = () => {
     submitError,
     handleSubmit,
     today,
-  } = useBookingForm(TerminBuchenData.errorMessage);
+  } = useBookingForm(TerminBuchenData.errorMessage, turnstileToken);
 
   const grid = buildMonthGrid(visibleMonth, slotsByDate, today);
   const hasAnySlotsThisMonth = grid.some((day) => day.inCurrentMonth && day.hasSlots);
@@ -67,7 +69,7 @@ const TerminBuchen = () => {
           description={TerminBuchenData.description}
         />
 
-        <Ui.Card glass className="mt-14 overflow-hidden flex flex-col lg:grid lg:grid-cols-[260px_1fr_1fr] lg:grid-rows-[400px] lg:gap-0">
+        <Ui.Card glass className="mt-14 overflow-hidden flex flex-col lg:grid lg:grid-cols-[260px_1fr_1fr] lg:grid-rows-[minmax(400px, auto)] lg:gap-0">
          {!sent && !loadError && <div className="contents lg:grid lg:grid-rows-2">
           <div className="order-1 border-b border-ink-800 p-6 sm:p-8 lg:order-0 lg:border-r lg:border-b-0 lg:p-5">
             <Ui.Text as="h3" variant="h3" text={TerminBuchenData.eventTitle} />
@@ -194,7 +196,7 @@ const TerminBuchen = () => {
               <form onSubmit={handleSubmit} className="flex flex-col gap-5 lg:gap-4">
                 <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:gap-4">
                   <Ui.Input
-                    label="Vorname"
+                    label="Vorname*"
                     placeholder="Max"
                     value={firstName}
                     onChange={setFirstName}
@@ -203,7 +205,7 @@ const TerminBuchen = () => {
                     as="input"
                   />
                   <Ui.Input
-                    label="Nachname"
+                    label="Nachname*"
                     placeholder="Mustermann"
                     value={lastName}
                     onChange={setLastName}
@@ -212,7 +214,7 @@ const TerminBuchen = () => {
                     as="input"
                   />
                   <Ui.Input
-                    label="E-Mail"
+                    label="E-Mail*"
                     placeholder="ihre@email.de"
                     value={email}
                     onChange={setEmail}
@@ -221,7 +223,7 @@ const TerminBuchen = () => {
                     as="input"
                   />
                   <Ui.Input
-                    label="Telefonnummer"
+                    label="Telefonnummer*"
                     placeholder="+49 170 1234567"
                     value={phone}
                     onChange={setPhone}
@@ -238,7 +240,10 @@ const TerminBuchen = () => {
                   onChange={setNotes}
                   as="textarea"
                   rows={3}
+                  className="min-h-20 max-h-40"
                 />
+
+                <div ref={turnstileRef} />
 
                 <Ui.Buttons
                   type="submit"
@@ -246,7 +251,7 @@ const TerminBuchen = () => {
                   label={sending ? 'Wird gebucht…' : TerminBuchenData.submitLabel}
                   variant="primary"
                   size="sm"
-                  disabled={sending}
+                  disabled={sending || !turnstileToken}
                   className="mt-2"
                 />
 

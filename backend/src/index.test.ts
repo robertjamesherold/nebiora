@@ -10,6 +10,25 @@ const env: Env = {
   CAL_API_KEY: 'cal-test-key',
   CAL_USERNAME: 'nebiora',
   CAL_EVENT_SLUG: 'buchungen',
+  TURNSTILE_SECRET: 'test-turnstile-secret',
+};
+
+const turnstileSuccessResponse = {
+  ok: true,
+  json: () => Promise.resolve({ success: true }),
+} as unknown as Response;
+
+const turnstileFailureResponse = {
+  ok: true,
+  json: () => Promise.resolve({ success: false }),
+} as unknown as Response;
+
+// Stubs a fetch mock where the first call (Turnstile siteverify) succeeds and
+// every subsequent call resolves to `downstreamResponse` (the Resend/cal.com mock).
+const stubFetchAfterTurnstile = (downstreamResponse: Response) => {
+  const fetchMock = vi.fn().mockResolvedValueOnce(turnstileSuccessResponse).mockResolvedValue(downstreamResponse);
+  vi.stubGlobal('fetch', fetchMock);
+  return fetchMock;
 };
 
 type WorkerRequest = Parameters<typeof worker.fetch>[0];

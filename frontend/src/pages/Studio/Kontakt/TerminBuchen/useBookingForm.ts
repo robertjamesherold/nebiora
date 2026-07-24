@@ -13,7 +13,7 @@ type SlotsResponse = {
   data?: Record<string, { start: string }[]>;
 };
 
-const useBookingForm = (errorMessage: string) => {
+const useBookingForm = (errorMessage: string, turnstileToken: string | null) => {
   const today = useMemo(() => new Date(), []);
   const [visibleMonth, setVisibleMonth] = useState(() => startOfMonth(today));
 
@@ -93,7 +93,7 @@ const useBookingForm = (errorMessage: string) => {
 
   const handleSubmit = async (event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!selectedSlot) return;
+    if (!selectedSlot || !turnstileToken) return;
 
     setSending(true);
     setSubmitError(null);
@@ -109,6 +109,7 @@ const useBookingForm = (errorMessage: string) => {
           phone,
           timeZone,
           ...(notes.trim() ? { notes: notes.trim() } : {}),
+          'cf-turnstile-response': turnstileToken,
         }),
       });
 

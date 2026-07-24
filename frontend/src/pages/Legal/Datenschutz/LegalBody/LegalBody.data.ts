@@ -6,7 +6,7 @@ const LegalBodyData: LegalBodyProps = {
       heading: 'Verantwortlicher',
       body: [
         'Verantwortlicher im Sinne der Datenschutz-Grundverordnung (DSGVO) und anderer nationaler Datenschutzgesetze der Mitgliedstaaten sowie sonstiger datenschutzrechtlicher Bestimmungen ist:',
-        'Nebiora.studio · Musterstraße 1 · 12345 Musterstadt · E-Mail: hallo@nebiora.studio',
+        'Nebiora.studio · Im Kammerfest 23 · 63628 Bad Soden-Salmünster · E-Mail: hallo@nebiora.studio',
       ],
     },
     {

@@ -15,6 +15,7 @@ const COLUMNS = [
       { label: 'Branding', to: '/leistungen/branding' },
       { label: 'SEO & Content', to: '/leistungen/seo-content' },
       { label: 'E-Commerce', to: '/leistungen/e-commerce' },
+      { label: 'Angebote', to: '/angebote' },
     ],
   },
   {

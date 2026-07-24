@@ -1,4 +1,3 @@
-import Hooks from '@/hooks';
 import Ui from '@/ui';
 
 import type { ContactFormProps } from './ContactForm.types';
@@ -13,12 +12,10 @@ const ContactForm = ({
   messagePrefix,
   className = '',
 }: ContactFormProps) => {
-  const { containerRef: turnstileRef, token: turnstileToken } = Hooks.useTurnstile();
   const { values, setValue, sent, sending, error, handleSubmit } = useContactForm({
     contactEmail,
     fields: fields.map((field) => field.label),
     messagePrefix,
-    turnstileToken,
   });
 
   if (sent) {
@@ -62,15 +59,13 @@ const ContactForm = ({
         ),
       )}
 
-      <div ref={turnstileRef} />
-
       <Ui.Buttons
         type="submit"
         container="button"
         label={sending ? 'Wird gesendet…' : submitLabel}
         variant="primary"
         size="sm"
-        disabled={sending || !turnstileToken}
+        disabled={sending}
         className="mt-2"
       />
 

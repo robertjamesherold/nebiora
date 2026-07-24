@@ -10,10 +10,9 @@ type UseContactFormArgs = {
   contactEmail: string;
   fields: string[];
   messagePrefix?: string;
-  turnstileToken: string | null;
 };
 
-const useContactForm = ({ contactEmail, fields, messagePrefix, turnstileToken }: UseContactFormArgs) => {
+const useContactForm = ({ contactEmail, fields, messagePrefix }: UseContactFormArgs) => {
   const [values, setValues] = React.useState<Record<string, string>>(() =>
     Object.fromEntries(fields.map((field) => [field, ''])),
   );
@@ -48,7 +47,7 @@ const useContactForm = ({ contactEmail, fields, messagePrefix, turnstileToken }:
       const response = await fetch(CONTACT_API_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, message, 'cf-turnstile-response': turnstileToken }),
+        body: JSON.stringify({ name, email, message }),
       });
 
       if (!response.ok) {

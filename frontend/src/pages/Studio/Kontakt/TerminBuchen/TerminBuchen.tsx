@@ -1,7 +1,6 @@
 import Components from '@components';
 import Icons from '@icons';
 
-import Hooks from '@/hooks';
 import Ui from '@/ui';
 
 import type { CalendarDay } from './calendarGrid';
@@ -27,7 +26,6 @@ const timeChipClasses = (active: boolean) =>
   }`;
 
 const TerminBuchen = () => {
-  const { containerRef: turnstileRef, token: turnstileToken } = Hooks.useTurnstile();
   const {
     visibleMonth,
     canGoToPreviousMonth,
@@ -55,7 +53,7 @@ const TerminBuchen = () => {
     submitError,
     handleSubmit,
     today,
-  } = useBookingForm(TerminBuchenData.errorMessage, turnstileToken);
+  } = useBookingForm(TerminBuchenData.errorMessage);
 
   const grid = buildMonthGrid(visibleMonth, slotsByDate, today);
   const hasAnySlotsThisMonth = grid.some((day) => day.inCurrentMonth && day.hasSlots);
@@ -240,10 +238,8 @@ const TerminBuchen = () => {
                   onChange={setNotes}
                   as="textarea"
                   rows={3}
-                  className="min-h-20 max-h-40"
+                  className="min-h-20 max-h-40 h-full grow"
                 />
-
-                <div ref={turnstileRef} />
 
                 <Ui.Buttons
                   type="submit"
@@ -251,7 +247,7 @@ const TerminBuchen = () => {
                   label={sending ? 'Wird gebucht…' : TerminBuchenData.submitLabel}
                   variant="primary"
                   size="sm"
-                  disabled={sending || !turnstileToken}
+                  disabled={sending}
                   className="mt-2"
                 />
 

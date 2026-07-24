@@ -17,30 +17,6 @@ const RESEND_API_URL = 'https://api.resend.com/emails';
 const CAL_API_URL = 'https://api.cal.com/v2';
 const CAL_SLOTS_API_VERSION = '2024-09-04';
 const CAL_BOOKINGS_API_VERSION = '2026-02-25';
-const TURNSTILE_VERIFY_URL = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
-
-const verifyTurnstile = async (token: unknown, secret: string, remoteip: string | null) => {
-  if (typeof token !== 'string' || token === '') {
-    console.error('Turnstile verification skipped: no token in payload');
-    return false;
-  }
-
-  const response = await fetch(TURNSTILE_VERIFY_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: new URLSearchParams({
-      secret,
-      response: token,
-      ...(remoteip ? { remoteip } : {}),
-    }),
-  });
-
-  const result = (await response.json()) as { success: boolean; 'error-codes'?: string[] };
-  if (!result.success) {
-    console.error('Turnstile verification failed', JSON.stringify(result['error-codes'] ?? []));
-  }
-  return result.success;
-};
 
 const isNonEmptyString = (value: unknown): value is string =>
   typeof value === 'string' && value.trim() !== '';
@@ -124,20 +100,6 @@ export default {
         return jsonResponse({ error: 'Name, E-Mail und Nachricht werden benötigt.' }, 400, origin);
       }
 
-      const turnstileToken = (payload as Record<string, unknown>)['cf-turnstile-response'];
-      const isHuman = await verifyTurnstile(
-        turnstileToken,
-        env.TURNSTILE_SECRET,
-        request.headers.get('CF-Connecting-IP'),
-      );
-      if (!isHuman) {
-        return jsonResponse(
-          { error: 'Sicherheitsprüfung fehlgeschlagen. Bitte laden Sie die Seite neu und versuchen Sie es erneut.' },
-          403,
-          origin,
-        );
-      }
-
       const { name, email, message } = payload;
 
       const resendResponse = await fetch(RESEND_API_URL, {
@@ -217,20 +179,6 @@ export default {
         return jsonResponse(
           { error: 'Vorname, Nachname, E-Mail, Telefonnummer und Zeitzone werden benötigt.' },
           400,
-          origin,
-        );
-      }
-
-      const turnstileToken = (payload as Record<string, unknown>)['cf-turnstile-response'];
-      const isHuman = await verifyTurnstile(
-        turnstileToken,
-        env.TURNSTILE_SECRET,
-        request.headers.get('CF-Connecting-IP'),
-      );
-      if (!isHuman) {
-        return jsonResponse(
-          { error: 'Sicherheitsprüfung fehlgeschlagen. Bitte laden Sie die Seite neu und versuchen Sie es erneut.' },
-          403,
           origin,
         );
       }

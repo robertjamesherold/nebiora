@@ -1,21 +1,6 @@
-import Components from '@components';
+import LeistungPage from '../LeistungPage';
+import ECommerceData from './ECommerce.data';
 
-import { ECommerceSections } from './';
-
-const ECommerce = () => (
-  <main>
-    <Components.PageMeta
-      title="E-Commerce"
-      description="E-Commerce-Lösungen von Nebiora.studio — Shops, die verkaufen: Produktseiten, Checkout und Zahlungsanbindung ohne Reibung."
-    />
-    <ECommerceSections.Hero />
-    <ECommerceSections.Beschreibung />
-    <ECommerceSections.Vorteile />
-    <ECommerceSections.Prozess />
-    <ECommerceSections.Technologien />
-    <ECommerceSections.FAQ />
-    <ECommerceSections.Cta />
-  </main>
-);
+const ECommerce = () => <LeistungPage data={ECommerceData} />;
 
 export default ECommerce;

@@ -1,21 +1,6 @@
-import Components from '@components';
+import LeistungPage from '../LeistungPage';
+import BrandingData from './Branding.data';
 
-import { BrandingSections } from './';
-
-const Branding = () => (
-  <main>
-    <Components.PageMeta
-      title="Branding"
-      description="Markenidentität von Nebiora.studio — Logo, Farbwelt, Typografie und Sprache für einen konsistenten Auftritt über alle Kanäle."
-    />
-    <BrandingSections.Hero />
-    <BrandingSections.Beschreibung />
-    <BrandingSections.Vorteile />
-    <BrandingSections.Prozess />
-    <BrandingSections.Technologien />
-    <BrandingSections.FAQ />
-    <BrandingSections.Cta />
-  </main>
-);
+const Branding = () => <LeistungPage data={BrandingData} />;
 
 export default Branding;

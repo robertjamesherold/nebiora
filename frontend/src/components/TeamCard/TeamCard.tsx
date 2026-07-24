@@ -3,7 +3,7 @@ import Ui from '@/ui';
 import type { TeamCardProps } from './TeamCard.types';
 
 const TeamCard = ({ name, role, photo, bio, className = '' }: TeamCardProps) => (
-  <Ui.Card className={`overflow-hidden p-0 ${className}`}>
+  <Ui.Card className={`glass-panel overflow-hidden p-0 ${className}`}>
     <img src={photo} alt={name} className="aspect-square w-full object-cover" />
     <div className="p-6">
       <Ui.Text as="h3" variant="h3" text={name} />

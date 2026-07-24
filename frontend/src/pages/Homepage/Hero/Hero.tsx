@@ -25,7 +25,6 @@ const Hero = () => {
             />
           ))}
         </div>
-        <Components.StatsGrid stats={HeroData.STATS} className="mt-20" />
       </div>
     </section>
   );

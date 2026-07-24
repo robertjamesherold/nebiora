@@ -14,11 +14,6 @@ const HeroData: HeroProps = {
     },
 
   ],
-  STATS: [
-    { value: '120+', label: 'Projekte realisiert' },
-    { value: '4,9 / 5', label: 'Kundenbewertung' },
-    { value: '14 Tage', label: 'bis zum ersten Entwurf' },
-  ],
 };
 
 export default HeroData;

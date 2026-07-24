@@ -8,10 +8,7 @@ type HeroProps = {
     variant: 'primary' | 'secondary';
     container: 'anchor';
   }[];
-  STATS: {
-    value: string;
-    label: string;
-  }[];
+
 };
 
 export type { HeroProps };

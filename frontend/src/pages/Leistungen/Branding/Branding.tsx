@@ -14,7 +14,6 @@ const Branding = () => (
     <BrandingSections.Prozess />
     <BrandingSections.Technologien />
     <BrandingSections.FAQ />
-    <BrandingSections.Referenzen />
     <BrandingSections.Cta />
   </main>
 );

@@ -19,7 +19,7 @@ describe('useContactForm', () => {
 
   it('initializes an empty value for every field', () => {
     const { result } = renderHook(() =>
-      useContactForm({ contactEmail: 'hi@example.com', fields: ['Name', 'E-Mail', 'Nachricht'] }),
+      useContactForm({ contactEmail: 'hi@example.com', fields: ['Name', 'E-Mail', 'Nachricht'], turnstileToken: 'test-token' }),
     );
 
     expect(result.current.values).toEqual({ Name: '', 'E-Mail': '', Nachricht: '' });
@@ -30,7 +30,7 @@ describe('useContactForm', () => {
 
   it('updates a single field via setValue without touching the others', () => {
     const { result } = renderHook(() =>
-      useContactForm({ contactEmail: 'hi@example.com', fields: ['Name', 'E-Mail'] }),
+      useContactForm({ contactEmail: 'hi@example.com', fields: ['Name', 'E-Mail'], turnstileToken: 'test-token' }),
     );
 
     act(() => {
@@ -49,6 +49,7 @@ describe('useContactForm', () => {
         contactEmail: 'hi@example.com',
         fields: ['Name', 'E-Mail', 'Firma', 'Nachricht'],
         messagePrefix: 'Neue Anfrage',
+        turnstileToken: 'test-token',
       }),
     );
 
@@ -68,6 +69,7 @@ describe('useContactForm', () => {
       name: 'Ada Lovelace',
       email: 'ada@example.com',
       message: 'Neue Anfrage\n\nFirma: Acme\n\nHallo!',
+      'cf-turnstile-response': 'test-token',
     });
     expect(result.current.sent).toBe(true);
     expect(result.current.sending).toBe(false);
@@ -78,7 +80,7 @@ describe('useContactForm', () => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: false }));
 
     const { result } = renderHook(() =>
-      useContactForm({ contactEmail: 'hi@example.com', fields: ['Name', 'E-Mail', 'Nachricht'] }),
+      useContactForm({ contactEmail: 'hi@example.com', fields: ['Name', 'E-Mail', 'Nachricht'], turnstileToken: 'test-token' }),
     );
 
     await submitForm(result);
@@ -92,7 +94,7 @@ describe('useContactForm', () => {
     vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('network down')));
 
     const { result } = renderHook(() =>
-      useContactForm({ contactEmail: 'hi@example.com', fields: ['Name', 'E-Mail', 'Nachricht'] }),
+      useContactForm({ contactEmail: 'hi@example.com', fields: ['Name', 'E-Mail', 'Nachricht'], turnstileToken: 'test-token' }),
     );
 
     await submitForm(result);

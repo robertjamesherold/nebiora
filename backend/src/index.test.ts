@@ -43,7 +43,12 @@ const contactRequest = (body: unknown, init: RequestInit = {}) =>
     ...init,
   });
 
-const validPayload = { name: 'Ada Lovelace', email: 'ada@example.com', message: 'Hallo!' };
+const validPayload = {
+  name: 'Ada Lovelace',
+  email: 'ada@example.com',
+  message: 'Hallo!',
+  'cf-turnstile-response': 'test-token',
+};
 
 const slotsRequest = (query: string) =>
   cfRequest(`https://api.nebiora.studio/api/booking/slots${query}`);
@@ -61,6 +66,7 @@ const validBookingPayload = {
   email: 'ada@example.com',
   phone: '+491701234567',
   timeZone: 'Europe/Berlin',
+  'cf-turnstile-response': 'test-token',
 };
 
 describe('backend contact worker', () => {
@@ -119,17 +125,21 @@ describe('backend contact worker', () => {
   });
 
   it('forwards a valid payload to Resend and escapes HTML in the body', async () => {
-    const fetchMock = vi.fn().mockResolvedValue({ ok: true } as Response);
-    vi.stubGlobal('fetch', fetchMock);
+    const fetchMock = stubFetchAfterTurnstile({ ok: true } as Response);
 
     const response = await worker.fetch(
-      contactRequest({ name: '<b>Ada</b>', email: 'ada@example.com', message: 'Hi & bye' }),
+      contactRequest({
+        name: '<b>Ada</b>',
+        email: 'ada@example.com',
+        message: 'Hi & bye',
+        'cf-turnstile-response': 'test-token',
+      }),
       env,
     );
 
     expect(response.status).toBe(200);
-    expect(fetchMock).toHaveBeenCalledOnce();
-    const [url, init] = fetchMock.mock.calls[0];
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    const [url, init] = fetchMock.mock.calls[1];
     expect(url).toBe('https://api.resend.com/emails');
     expect(init.headers.Authorization).toBe('Bearer test-key');
     const sentBody = JSON.parse(init.body);
@@ -138,16 +148,21 @@ describe('backend contact worker', () => {
     expect(sentBody.reply_to).toBe('ada@example.com');
   });
 
+  it('rejects a contact request when Turnstile verification fails', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(turnstileFailureResponse));
+
+    const response = await worker.fetch(contactRequest(validPayload), env);
+
+    expect(response.status).toBe(403);
+  });
+
   it('returns 502 and does not leak the raw Resend response body when the send fails', async () => {
     const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => { });
-    vi.stubGlobal(
-      'fetch',
-      vi.fn().mockResolvedValue({
-        ok: false,
-        status: 422,
-        text: () => Promise.resolve('{"secret":"leaked-detail"}'),
-      } as unknown as Response),
-    );
+    stubFetchAfterTurnstile({
+      ok: false,
+      status: 422,
+      text: () => Promise.resolve('{"secret":"leaked-detail"}'),
+    } as unknown as Response);
 
     const response = await worker.fetch(contactRequest(validPayload), env);
 
@@ -241,17 +256,16 @@ describe('backend booking worker', () => {
   });
 
   it('forwards a valid booking to cal.com with the configured event type and username', async () => {
-    const fetchMock = vi.fn().mockResolvedValue({
+    const fetchMock = stubFetchAfterTurnstile({
       ok: true,
       json: () => Promise.resolve({ status: 'success', data: { uid: 'booking-uid-123' } }),
     } as unknown as Response);
-    vi.stubGlobal('fetch', fetchMock);
 
     const response = await worker.fetch(createBookingRequest(validBookingPayload), env);
 
     expect(response.status).toBe(201);
-    expect(fetchMock).toHaveBeenCalledOnce();
-    const [url, init] = fetchMock.mock.calls[0];
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    const [url, init] = fetchMock.mock.calls[1];
     expect(url).toBe('https://api.cal.com/v2/bookings');
     expect(init.headers['cal-api-version']).toBe('2026-02-25');
     expect(init.headers.Authorization).toBe('Bearer cal-test-key');
@@ -268,11 +282,10 @@ describe('backend booking worker', () => {
   });
 
   it('includes bookingFieldsResponses.notes only when notes are provided', async () => {
-    const fetchMock = vi.fn().mockResolvedValue({
+    const fetchMock = stubFetchAfterTurnstile({
       ok: true,
       json: () => Promise.resolve({ status: 'success', data: { uid: 'booking-uid-123' } }),
     } as unknown as Response);
-    vi.stubGlobal('fetch', fetchMock);
 
     const response = await worker.fetch(
       createBookingRequest({ ...validBookingPayload, notes: 'Bitte kurz vorher anrufen.' }),
@@ -280,21 +293,18 @@ describe('backend booking worker', () => {
     );
 
     expect(response.status).toBe(201);
-    const [, init] = fetchMock.mock.calls[0];
+    const [, init] = fetchMock.mock.calls[1];
     const sentBody = JSON.parse(init.body);
     expect(sentBody.bookingFieldsResponses).toEqual({ notes: 'Bitte kurz vorher anrufen.' });
   });
 
   it('returns 409 without leaking the raw cal.com response when the slot is already taken', async () => {
     const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => { });
-    vi.stubGlobal(
-      'fetch',
-      vi.fn().mockResolvedValue({
-        ok: false,
-        status: 409,
-        json: () => Promise.resolve({ error: { message: 'Slot already booked', internalDetail: 'leaked-detail' } }),
-      } as unknown as Response),
-    );
+    stubFetchAfterTurnstile({
+      ok: false,
+      status: 409,
+      json: () => Promise.resolve({ error: { message: 'Slot already booked', internalDetail: 'leaked-detail' } }),
+    } as unknown as Response);
 
     const response = await worker.fetch(createBookingRequest(validBookingPayload), env);
     const body = await response.json();
@@ -302,5 +312,13 @@ describe('backend booking worker', () => {
     expect(response.status).toBe(409);
     expect(JSON.stringify(body)).not.toContain('leaked-detail');
     expect(errorSpy).toHaveBeenCalled();
+  });
+
+  it('rejects a booking request when Turnstile verification fails', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(turnstileFailureResponse));
+
+    const response = await worker.fetch(createBookingRequest(validBookingPayload), env);
+
+    expect(response.status).toBe(403);
   });
 });

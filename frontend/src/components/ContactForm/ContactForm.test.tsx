@@ -13,6 +13,16 @@ const fields = [
 describe('ContactForm', () => {
   beforeEach(() => {
     vi.restoreAllMocks();
+    // Stub the Turnstile widget: "solve" it immediately so the submit button
+    // isn't stuck disabled waiting on a token that never arrives in jsdom.
+    window.turnstile = {
+      render: (_container, options) => {
+        queueMicrotask(() => options.callback?.('test-token'));
+        return 'test-widget-id';
+      },
+      reset: vi.fn(),
+      remove: vi.fn(),
+    };
   });
 
   it('renders a labeled input for every configured field', () => {

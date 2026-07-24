@@ -5,8 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "wrangler dev",
-    "build": "tsc --noEmit",
-    "typecheck": "tsc --noEmit",
+    "build": "wrangler types && tsc --noEmit",
+    "typecheck": "wrangler types && tsc --noEmit",
     "deploy": "wrangler deploy",
     "types": "wrangler types",
     "test": "vitest run"

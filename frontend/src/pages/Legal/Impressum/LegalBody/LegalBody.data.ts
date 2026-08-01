@@ -5,28 +5,28 @@ const LegalBodyData: LegalBodyProps = {
     {
       heading: 'Angaben gemäß § 5 TMG',
       body: [
-        'Nebiora.studio · Musterstraße 1 · 12345 Musterstadt · Deutschland',
+        'Nebiora.studio · Im Kammerfest 23 · 63628 Bad Soden-Salmünster · Deutschland',
         'Diese Angaben dienen der Anbieterkennzeichnung gemäß § 5 des Telemediengesetzes (TMG) und werden vor Veröffentlichung der Website durch die vollständigen, rechtsgültigen Firmendaten ersetzt.',
       ],
     },
     {
       heading: 'Kontakt',
       body: [
-        'Telefon: +49 (0) 00 00000000 · E-Mail: hallo@nebiora.studio',
+        'Telefon: +49 151 58338231 · E-Mail: hallo@nebiora.studio',
         'Für Presseanfragen, Kooperationen oder allgemeine Rückfragen erreichen Sie uns über die vorstehenden Kontaktdaten. Wir bemühen uns, Anfragen innerhalb von zwei Werktagen zu beantworten.',
       ],
     },
-    {
-      heading: 'Umsatzsteuer-ID',
-      body: [
-        'Umsatzsteuer-Identifikationsnummer gemäß § 27 a Umsatzsteuergesetz: DE XXXXXXXXX.',
-        'Handelsregisternummer: HRB XXXXX, Registergericht: Amtsgericht Musterstadt.',
-      ],
-    },
+    /*     {
+          heading: 'Umsatzsteuer-ID',
+          body: [
+            'Umsatzsteuer-Identifikationsnummer gemäß § 27 a Umsatzsteuergesetz: DE XXXXXXXXX.',
+            'Handelsregisternummer: HRB XXXXX, Registergericht: Amtsgericht Musterstadt.',
+          ],
+        }, */
     {
       heading: 'Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV',
       body: [
-        'Max Mustermann · Musterstraße 1 · 12345 Musterstadt',
+        'Robert James Herold · Im Kammerfest 23 · 63628 Bad Soden-Salmünster · Deutschland',
         'Der inhaltlich Verantwortliche im Sinne des Rundfunkstaatsvertrags trägt die redaktionelle Verantwortung für die auf dieser Website bereitgestellten journalistisch-redaktionellen Inhalte.',
       ],
     },
@@ -55,3 +55,5 @@ const LegalBodyData: LegalBodyProps = {
 };
 
 export default LegalBodyData;
+
+

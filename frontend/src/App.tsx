@@ -25,6 +25,8 @@ const App = () => {
 
             <Route path="/studio/ueber-uns" element={<Pages.UeberUns />} />
             <Route path="/studio/kontakt" element={<Pages.Kontakt />} />
+            <Route path="/studio/contact" element={<Pages.Kontakt />} />
+
             <Route path="/studio/ablauf" element={<Pages.Ablauf />} />
 
 

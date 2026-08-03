@@ -292,6 +292,9 @@ describe('backend booking worker', () => {
     ['international with spaces', '+49 170 1234567', '+491701234567'],
     ['international already normalized', '+491701234567', '+491701234567'],
     ['national with a trunk zero', '0170 1234567', '+491701234567'],
+    // iOS Safari's contact autofill sometimes drops both the "+49" and the
+    // trunk zero, leaving just the bare national significant number.
+    ['iOS autofill with no trunk zero and no country code', '170 1234567', '+491701234567'],
     ['national with a slash', '0170/1234567', '+491701234567'],
     ['national with dashes', '0170-123 4567', '+491701234567'],
     ['00 international prefix', '0049 170 1234567', '+491701234567'],

@@ -53,7 +53,7 @@ const TerminBuchen = () => {
     submitError,
     handleSubmit,
     today,
-  } = useBookingForm(TerminBuchenData.errorMessage);
+  } = useBookingForm(TerminBuchenData.errorMessage, TerminBuchenData.noSlotSelectedMessage);
 
   const grid = buildMonthGrid(visibleMonth, slotsByDate, today);
   const hasAnySlotsThisMonth = grid.some((day) => day.inCurrentMonth && day.hasSlots);
@@ -200,6 +200,7 @@ const TerminBuchen = () => {
                     onChange={setFirstName}
                     required
                     type="text"
+                    autoComplete="given-name"
                     as="input"
                   />
                   <Ui.Input
@@ -209,6 +210,7 @@ const TerminBuchen = () => {
                     onChange={setLastName}
                     required
                     type="text"
+                    autoComplete="family-name"
                     as="input"
                   />
                   <Ui.Input
@@ -218,6 +220,7 @@ const TerminBuchen = () => {
                     onChange={setEmail}
                     required
                     type="email"
+                    autoComplete="email"
                     as="input"
                   />
                   <Ui.Input
@@ -227,6 +230,8 @@ const TerminBuchen = () => {
                     onChange={setPhone}
                     required
                     type="tel"
+                    autoComplete="tel"
+                    inputMode="tel"
                     as="input"
                   />
                 </div>
@@ -251,7 +256,11 @@ const TerminBuchen = () => {
                   className="mt-2"
                 />
 
-                {submitError && <Ui.Text variant="error" text={submitError} />}
+                {submitError && (
+                  <div role="alert">
+                    <Ui.Text variant="error" text={submitError} />
+                  </div>
+                )}
               </form>
             </div>
           )}

@@ -9,6 +9,7 @@ type TerminBuchenProps = {
   sentHeading: string;
   sentMessage: string;
   errorMessage: string;
+  noSlotSelectedMessage: string;
 };
 
 export type { TerminBuchenProps };

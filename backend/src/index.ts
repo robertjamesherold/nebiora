@@ -27,6 +27,16 @@ const isValidPhone = (value: string) => /^[+\d][\d\s()/.-]{5,}$/.test(value.trim
 
 const DEFAULT_COUNTRY_CODE = '49';
 
+// A German national number never starts with "0" once the country code is in
+// front of it — that "0" is the trunk prefix, dropped whenever the number is
+// dialed with a country code. Someone writing "+49 0170 …" (no parentheses)
+// means the same trunk zero as "+49 (0)170 …"; both must lose the zero, or the
+// result parses as a 13-digit number that isn't the one they own.
+const stripTrunkZeroAfterCountryCode = (digits: string) =>
+  digits.startsWith(`${DEFAULT_COUNTRY_CODE}0`)
+    ? DEFAULT_COUNTRY_CODE + digits.slice(DEFAULT_COUNTRY_CODE.length + 1)
+    : digits;
+
 // cal.com requires strict E.164 and rejects everything else outright with
 // "invalid_number". Stripping punctuation is not enough: a German user typing
 // the national format ("0170 1234567") or using their phone's contact autofill
@@ -37,17 +47,21 @@ const toE164 = (value: string) => {
   // rather than folded into the digits, or the result becomes "+490170…".
   const trimmed = value.replace(/\(\s*0\s*\)/g, '').trim();
 
-  if (trimmed.startsWith('+')) return `+${trimmed.slice(1).replace(/\D/g, '')}`;
+  if (trimmed.startsWith('+')) {
+    return `+${stripTrunkZeroAfterCountryCode(trimmed.slice(1).replace(/\D/g, ''))}`;
+  }
 
   const digits = trimmed.replace(/\D/g, '');
 
   // "00" is the international access prefix used across Europe.
-  if (digits.startsWith('00')) return `+${digits.slice(2)}`;
+  if (digits.startsWith('00')) return `+${stripTrunkZeroAfterCountryCode(digits.slice(2))}`;
   // A single leading "0" is the national trunk prefix — it is replaced by the
   // country code, never kept.
   if (digits.startsWith('0')) return `+${DEFAULT_COUNTRY_CODE}${digits.slice(1)}`;
   // Already carries the country code, just without the "+".
-  if (digits.startsWith(DEFAULT_COUNTRY_CODE) && digits.length >= 11) return `+${digits}`;
+  if (digits.startsWith(DEFAULT_COUNTRY_CODE) && digits.length >= 11) {
+    return `+${stripTrunkZeroAfterCountryCode(digits)}`;
+  }
 
   return `+${DEFAULT_COUNTRY_CODE}${digits}`;
 };

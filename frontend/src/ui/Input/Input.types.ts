@@ -12,6 +12,8 @@ type InputProps = {
   as?: 'input' | 'textarea' | 'checkbox';
   type?: string;
   rows?: number;
+  autoComplete?: string;
+  inputMode?: 'text' | 'tel' | 'email' | 'numeric' | 'decimal' | 'search' | 'url' | 'none';
 };
 
 export type { InputProps };

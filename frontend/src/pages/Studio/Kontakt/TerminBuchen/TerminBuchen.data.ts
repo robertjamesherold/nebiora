@@ -11,6 +11,7 @@ const TerminBuchenData: TerminBuchenProps = {
   sentHeading: 'Termin gebucht!',
   sentMessage: 'Sie erhalten in Kürze eine Bestätigung per E-Mail.',
   errorMessage: 'Der Termin konnte nicht gebucht werden. Bitte versuchen Sie es erneut oder nutzen Sie das Formular oben.',
+  noSlotSelectedMessage: 'Bitte wählen Sie zuerst einen Termin im Kalender aus.',
 };
 
 export default TerminBuchenData;

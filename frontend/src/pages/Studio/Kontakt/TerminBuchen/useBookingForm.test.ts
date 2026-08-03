@@ -5,8 +5,9 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import useBookingForm from './useBookingForm';
 
 const ERROR_MESSAGE = 'Der Termin konnte nicht gebucht werden.';
+const NO_SLOT_SELECTED_MESSAGE = 'Bitte wählen Sie zuerst einen Termin im Kalender aus.';
 
-const renderBookingForm = () => renderHook(() => useBookingForm(ERROR_MESSAGE));
+const renderBookingForm = () => renderHook(() => useBookingForm(ERROR_MESSAGE, NO_SLOT_SELECTED_MESSAGE));
 
 const submitForm = async (result: { current: ReturnType<typeof useBookingForm> }) => {
   const preventDefault = vi.fn();
@@ -40,13 +41,14 @@ describe('useBookingForm', () => {
     stubFetch(() => Promise.reject(new Error('unexpected create call in this test')));
   });
 
-  it('does not submit without a selected slot', async () => {
+  it('surfaces a visible error instead of silently doing nothing when no slot is selected', async () => {
     const { result } = renderBookingForm();
     await waitFor(() => expect(result.current.loadingSlots).toBe(false));
 
     const preventDefault = await submitForm(result);
 
     expect(preventDefault).toHaveBeenCalledOnce();
+    expect(result.current.submitError).toBe(NO_SLOT_SELECTED_MESSAGE);
     expect(result.current.sending).toBe(false);
     expect(result.current.sent).toBe(false);
   });

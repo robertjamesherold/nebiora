@@ -13,7 +13,7 @@ type SlotsResponse = {
   data?: Record<string, { start: string }[]>;
 };
 
-const useBookingForm = (errorMessage: string) => {
+const useBookingForm = (errorMessage: string, noSlotSelectedMessage: string) => {
   const today = useMemo(() => new Date(), []);
   const [visibleMonth, setVisibleMonth] = useState(() => startOfMonth(today));
 
@@ -93,7 +93,10 @@ const useBookingForm = (errorMessage: string) => {
 
   const handleSubmit = async (event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!selectedSlot) return;
+    if (!selectedSlot) {
+      setSubmitError(noSlotSelectedMessage);
+      return;
+    }
 
     setSending(true);
     setSubmitError(null);

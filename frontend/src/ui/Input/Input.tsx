@@ -49,6 +49,8 @@ const Input = (props: InputProps) => {
           value={value}
           onChange={handleChange}
           placeholder={placeholder}
+          autoComplete={props.autoComplete}
+          inputMode={props.inputMode}
           className={`${InputVariant.base} ${props.className ?? ''}`}
         />
       )}

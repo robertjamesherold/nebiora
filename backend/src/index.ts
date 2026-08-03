@@ -136,7 +136,7 @@ const jsonResponse = (body: unknown, status: number, origin: string) =>
 // fetch() rejecting or the upstream body not being JSON both throw — left
 // unguarded, that surfaces to the client as a bare, unlogged 502 with no way
 // to tell what actually went wrong upstream.
-const fetchCalJson = async (
+const fetchJson = async (
   context: string,
   input: string | URL,
   init?: RequestInit,
@@ -190,7 +190,7 @@ export default {
 
       const { name, email, message } = payload;
 
-      const resendResponse = await fetch(RESEND_API_URL, {
+      const resendResult = await fetchJson('Resend send', RESEND_API_URL, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${env.RESEND_API_KEY}`,
@@ -206,7 +206,17 @@ export default {
         }),
       });
 
+      if (!resendResult) {
+        return jsonResponse({ error: 'E-Mail konnte nicht gesendet werden.' }, 502, origin);
+      }
+
+      const { response: resendResponse } = resendResult;
+
       if (!resendResponse.ok) {
+        // Never log Resend's response body here — it can carry the sender/recipient
+        // details from this request, and unlike cal.com's errors, none of Resend's
+        // rejection reasons (bad sender domain, API key, rate limit) are something
+        // the customer submitting this form could act on anyway.
         console.error('Resend send failed', resendResponse.status);
         return jsonResponse({ error: 'E-Mail konnte nicht gesendet werden.' }, 502, origin);
       }
@@ -234,7 +244,7 @@ export default {
       slotsUrl.searchParams.set('username', env.CAL_USERNAME);
       slotsUrl.searchParams.set('timeZone', timeZone);
 
-      const calResult = await fetchCalJson('cal.com slots request', slotsUrl, {
+      const calResult = await fetchJson('cal.com slots request', slotsUrl, {
         headers: {
           'cal-api-version': CAL_SLOTS_API_VERSION,
           Authorization: `Bearer ${env.CAL_API_KEY}`,
@@ -290,7 +300,7 @@ export default {
         );
       }
 
-      const calResult = await fetchCalJson('cal.com booking creation', `${CAL_API_URL}/bookings`, {
+      const calResult = await fetchJson('cal.com booking creation', `${CAL_API_URL}/bookings`, {
         method: 'POST',
         headers: {
           'cal-api-version': CAL_BOOKINGS_API_VERSION,

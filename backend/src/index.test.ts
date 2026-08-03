@@ -100,7 +100,9 @@ describe('backend contact worker', () => {
   });
 
   it('forwards a valid payload to Resend and escapes HTML in the body', async () => {
-    const fetchMock = vi.fn().mockResolvedValue({ ok: true } as Response);
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValue({ ok: true, json: () => Promise.resolve({ id: 'email-id-123' }) } as unknown as Response);
     vi.stubGlobal('fetch', fetchMock);
 
     const response = await worker.fetch(
@@ -126,7 +128,7 @@ describe('backend contact worker', () => {
       vi.fn().mockResolvedValue({
         ok: false,
         status: 422,
-        text: () => Promise.resolve('{"secret":"leaked-detail"}'),
+        json: () => Promise.resolve({ secret: 'leaked-detail' }),
       } as unknown as Response),
     );
 
@@ -136,6 +138,19 @@ describe('backend contact worker', () => {
     expect(errorSpy).toHaveBeenCalledWith('Resend send failed', 422);
     const loggedArgs = errorSpy.mock.calls.flat();
     expect(loggedArgs.some((arg) => String(arg).includes('leaked-detail'))).toBe(false);
+  });
+
+  it('returns 502 without throwing when the Resend request itself fails', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockRejectedValue(new Error('network down')),
+    );
+
+    const response = await worker.fetch(contactRequest(validPayload), env);
+    const body = (await response.json()) as { error: string };
+
+    expect(response.status).toBe(502);
+    expect(body.error).toBe('E-Mail konnte nicht gesendet werden.');
   });
 });
 

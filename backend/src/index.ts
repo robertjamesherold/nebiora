@@ -25,6 +25,13 @@ const isValidEmail = (value: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
 
 const isValidPhone = (value: string) => /^[+\d][\d\s()-]{5,}$/.test(value.trim());
 
+// cal.com's API requires strict E.164 (digits only, optional leading +) and
+// rejects the human-friendly formatting ("+49 170 1234567") this form collects.
+const toE164 = (value: string) => {
+  const trimmed = value.trim();
+  return (trimmed.startsWith('+') ? '+' : '') + trimmed.replace(/\D/g, '');
+};
+
 const isContactPayload = (data: unknown): data is ContactPayload => {
   if (typeof data !== 'object' || data === null) return false;
   const { name, email, message } = data as Record<string, unknown>;
@@ -194,7 +201,7 @@ export default {
         },
         body: JSON.stringify({
           start,
-          attendee: { name, email, timeZone, phoneNumber: phone },
+          attendee: { name, email, timeZone, phoneNumber: toE164(phone) },
           eventTypeSlug: env.CAL_EVENT_SLUG,
           username: env.CAL_USERNAME,
           ...(isNonEmptyString(notes) ? { bookingFieldsResponses: { notes } } : {}),

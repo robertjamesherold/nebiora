@@ -36,6 +36,7 @@ const Input = (props: InputProps) => {
       {props.as === 'textarea' ? (
         <textarea
           required={required}
+          name={props.name}
           value={value}
           onChange={handleChange}
           placeholder={placeholder}
@@ -45,6 +46,7 @@ const Input = (props: InputProps) => {
       ) : (
         <input
           required={required}
+          name={props.name}
           type={props.type ?? 'text'}
           value={value}
           onChange={handleChange}

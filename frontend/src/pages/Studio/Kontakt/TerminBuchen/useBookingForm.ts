@@ -101,6 +101,20 @@ const useBookingForm = (errorMessage: string, noSlotSelectedMessage: string) => 
     setSending(true);
     setSubmitError(null);
 
+    // iOS Safari's Contacts autofill can set an input's DOM value without
+    // firing the change event React listens for, leaving the controlled
+    // state stale even though the field visibly shows the filled-in value.
+    // Reading the submitted form directly sidesteps that — it reflects
+    // whatever is actually in the DOM regardless of which events fired.
+    const submittedFields =
+      event.currentTarget instanceof HTMLFormElement ? new FormData(event.currentTarget) : null;
+    const fieldValue = (name: string, fallback: string) => String(submittedFields?.get(name) ?? fallback).trim();
+
+    const submittedFirstName = fieldValue('firstName', firstName);
+    const submittedLastName = fieldValue('lastName', lastName);
+    const submittedEmail = fieldValue('email', email);
+    const submittedPhone = fieldValue('phone', phone);
+
     // Deliberately not retried: creating a booking is not idempotent, so a
     // retry after an ambiguous failure risks double-booking the slot.
     try {
@@ -109,9 +123,9 @@ const useBookingForm = (errorMessage: string, noSlotSelectedMessage: string) => 
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           start: selectedSlot,
-          name: `${firstName} ${lastName}`.trim(),
-          email,
-          phone,
+          name: `${submittedFirstName} ${submittedLastName}`.trim(),
+          email: submittedEmail,
+          phone: submittedPhone,
           timeZone,
           ...(notes.trim() ? { notes: notes.trim() } : {}),
         }),

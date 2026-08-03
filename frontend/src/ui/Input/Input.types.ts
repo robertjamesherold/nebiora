@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 type InputProps = {
   value?: string;
   onChange?: (value: string) => void;
+  name?: string;
   checked?: boolean;
   onCheckedChange?: (checked: boolean) => void;
   placeholder?: string;

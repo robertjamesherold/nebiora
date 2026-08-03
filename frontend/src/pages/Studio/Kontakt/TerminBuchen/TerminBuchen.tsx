@@ -196,6 +196,7 @@ const TerminBuchen = () => {
                   <Ui.Input
                     label="Vorname*"
                     placeholder="Max"
+                    name="firstName"
                     value={firstName}
                     onChange={setFirstName}
                     required
@@ -206,6 +207,7 @@ const TerminBuchen = () => {
                   <Ui.Input
                     label="Nachname*"
                     placeholder="Mustermann"
+                    name="lastName"
                     value={lastName}
                     onChange={setLastName}
                     required
@@ -216,6 +218,7 @@ const TerminBuchen = () => {
                   <Ui.Input
                     label="E-Mail*"
                     placeholder="ihre@email.de"
+                    name="email"
                     value={email}
                     onChange={setEmail}
                     required
@@ -226,6 +229,7 @@ const TerminBuchen = () => {
                   <Ui.Input
                     label="Telefonnummer*"
                     placeholder="+49 170 1234567"
+                    name="phone"
                     value={phone}
                     onChange={(value: string) => {
                       const trimmed = value.trimStart();
@@ -247,6 +251,7 @@ const TerminBuchen = () => {
                     }}
                     required
                     type="tel"
+                    autoComplete="tel"
                     inputMode="tel"
                     as="input"
                   />

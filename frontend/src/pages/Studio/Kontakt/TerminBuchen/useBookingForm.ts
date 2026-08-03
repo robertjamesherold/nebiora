@@ -98,34 +98,56 @@ const useBookingForm = (errorMessage: string) => {
     setSending(true);
     setSubmitError(null);
 
-    try {
-      const response = await fetch(`${BOOKING_API_BASE}/create`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          start: selectedSlot,
-          name: `${firstName} ${lastName}`.trim(),
-          email,
-          phone,
-          timeZone,
-          ...(notes.trim() ? { notes: notes.trim() } : {}),
-        }),
-      });
+    const requestBody = JSON.stringify({
+      start: selectedSlot,
+      name: `${firstName} ${lastName}`.trim(),
+      email,
+      phone,
+      timeZone,
+      ...(notes.trim() ? { notes: notes.trim() } : {}),
+    });
 
-      const body = (await response.json().catch(() => null)) as { error?: string } | null;
+    // iOS Safari's fetch doesn't auto-retry a connection dropped mid-request
+    // the way Chromium's network stack does, so a single transient blip
+    // (common on cellular) surfaces as a hard failure. One retry — only for
+    // a 502 (our own "upstream call failed" signal, not a rejected booking)
+    // or a thrown fetch — smooths that over without masking real rejections
+    // like an invalid phone number or a slot conflict.
+    const maxAttempts = 2;
 
-      if (!response.ok) {
-        setSubmitError(body?.error ?? errorMessage);
-        return;
+    for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+      try {
+        const response = await fetch(`${BOOKING_API_BASE}/create`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: requestBody,
+        });
+
+        if (response.status === 502 && attempt < maxAttempts) {
+          await new Promise((resolve) => setTimeout(resolve, 500));
+          continue;
+        }
+
+        const body = (await response.json().catch(() => null)) as { error?: string } | null;
+
+        if (!response.ok) {
+          setSubmitError(body?.error ?? errorMessage);
+          break;
+        }
+
+        setSent(true);
+        break;
+      } catch {
+        if (attempt < maxAttempts) {
+          await new Promise((resolve) => setTimeout(resolve, 500));
+          continue;
+        }
+        // Genuine network failure (fetch itself rejected) — no backend message to show.
+        setSubmitError(errorMessage);
       }
-
-      setSent(true);
-    } catch {
-      // Genuine network failure (fetch itself rejected) — no backend message to show.
-      setSubmitError(errorMessage);
-    } finally {
-      setSending(false);
     }
+
+    setSending(false);
   };
 
   return {

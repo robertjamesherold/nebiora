@@ -23,14 +23,37 @@ const isNonEmptyString = (value: unknown): value is string =>
 
 const isValidEmail = (value: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 
-const isValidPhone = (value: string) => /^[+\d][\d\s()-]{5,}$/.test(value.trim());
+const isValidPhone = (value: string) => /^[+\d][\d\s()/.-]{5,}$/.test(value.trim());
 
-// cal.com's API requires strict E.164 (digits only, optional leading +) and
-// rejects the human-friendly formatting ("+49 170 1234567") this form collects.
+const DEFAULT_COUNTRY_CODE = '49';
+
+// cal.com requires strict E.164 and rejects everything else outright with
+// "invalid_number". Stripping punctuation is not enough: a German user typing
+// the national format ("0170 1234567") or using their phone's contact autofill
+// produces a number with a trunk "0" and no country code, which is valid to a
+// human and invalid to cal.com.
 const toE164 = (value: string) => {
-  const trimmed = value.trim();
-  return (trimmed.startsWith('+') ? '+' : '') + trimmed.replace(/\D/g, '');
+  // "+49 (0) 170 …" writes the trunk prefix in parentheses — it must be dropped
+  // rather than folded into the digits, or the result becomes "+490170…".
+  const trimmed = value.replace(/\(\s*0\s*\)/g, '').trim();
+
+  if (trimmed.startsWith('+')) return `+${trimmed.slice(1).replace(/\D/g, '')}`;
+
+  const digits = trimmed.replace(/\D/g, '');
+
+  // "00" is the international access prefix used across Europe.
+  if (digits.startsWith('00')) return `+${digits.slice(2)}`;
+  // A single leading "0" is the national trunk prefix — it is replaced by the
+  // country code, never kept.
+  if (digits.startsWith('0')) return `+${DEFAULT_COUNTRY_CODE}${digits.slice(1)}`;
+  // Already carries the country code, just without the "+".
+  if (digits.startsWith(DEFAULT_COUNTRY_CODE) && digits.length >= 11) return `+${digits}`;
+
+  return `+${DEFAULT_COUNTRY_CODE}${digits}`;
 };
+
+// E.164 allows at most 15 digits, and the country code never starts with 0.
+const isE164 = (value: string) => /^\+[1-9]\d{7,14}$/.test(value);
 
 const isContactPayload = (data: unknown): data is ContactPayload => {
   if (typeof data !== 'object' || data === null) return false;
@@ -225,6 +248,19 @@ export default {
 
       const { start, name, email, phone, timeZone, notes } = payload;
 
+      const phoneNumber = toE164(phone);
+
+      if (!isE164(phoneNumber)) {
+        return jsonResponse(
+          {
+            error:
+              'Diese Telefonnummer konnten wir nicht zuordnen. Bitte geben Sie sie mit Vorwahl an, z. B. 0170 1234567 oder +49 170 1234567.',
+          },
+          400,
+          origin,
+        );
+      }
+
       const calResult = await fetchCalJson('cal.com booking creation', `${CAL_API_URL}/bookings`, {
         method: 'POST',
         headers: {
@@ -234,7 +270,7 @@ export default {
         },
         body: JSON.stringify({
           start,
-          attendee: { name, email, timeZone, phoneNumber: toE164(phone) },
+          attendee: { name, email, timeZone, phoneNumber },
           eventTypeSlug: env.CAL_EVENT_SLUG,
           username: env.CAL_USERNAME,
           ...(isNonEmptyString(notes) ? { bookingFieldsResponses: { notes } } : {}),
@@ -249,16 +285,30 @@ export default {
 
       if (!calResponse.ok) {
         console.error('cal.com booking creation failed', calResponse.status, JSON.stringify(calBody));
-        const isConflict = calResponse.status === 409;
-        return jsonResponse(
-          {
-            error: isConflict
-              ? 'Dieser Termin ist gerade nicht mehr verfügbar. Bitte wählen Sie einen anderen Slot.'
-              : 'Termin konnte nicht gebucht werden.',
-          },
-          isConflict ? 409 : 502,
-          origin,
-        );
+
+        if (calResponse.status === 409) {
+          return jsonResponse(
+            { error: 'Dieser Termin ist gerade nicht mehr verfügbar. Bitte wählen Sie einen anderen Slot.' },
+            409,
+            origin,
+          );
+        }
+
+        // cal.com rejected the payload itself. Nothing about that improves on a
+        // second attempt, so it must not reach the client as a 5xx — the user
+        // has to change something before this can succeed.
+        if (calResponse.status >= 400 && calResponse.status < 500) {
+          return jsonResponse(
+            {
+              error:
+                'Die Buchungsdaten wurden nicht akzeptiert. Bitte prüfen Sie Telefonnummer und E-Mail-Adresse.',
+            },
+            400,
+            origin,
+          );
+        }
+
+        return jsonResponse({ error: 'Termin konnte nicht gebucht werden.' }, 502, origin);
       }
 
       return jsonResponse(calBody, 201, origin);

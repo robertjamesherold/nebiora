@@ -284,4 +284,91 @@ describe('backend booking worker', () => {
     expect(JSON.stringify(body)).not.toContain('leaked-detail');
     expect(errorSpy).toHaveBeenCalled();
   });
+
+  // cal.com requires strict E.164 and answers anything else with
+  // "{attendeePhoneNumber}invalid_number" — the failure that broke live
+  // bookings for anyone entering a German national-format number.
+  it.each([
+    ['international with spaces', '+49 170 1234567', '+491701234567'],
+    ['international already normalized', '+491701234567', '+491701234567'],
+    ['national with a trunk zero', '0170 1234567', '+491701234567'],
+    ['national with a slash', '0170/1234567', '+491701234567'],
+    ['national with dashes', '0170-123 4567', '+491701234567'],
+    ['00 international prefix', '0049 170 1234567', '+491701234567'],
+    ['trunk zero in parentheses', '+49 (0) 170 1234567', '+491701234567'],
+    ['non-breaking spaces', '+49 170 1234567', '+491701234567'],
+    ['a landline with an area code', '069 1234567', '+49691234567'],
+    ['a non-German number is left alone', '+43 664 1234567', '+436641234567'],
+  ])('normalizes %s to E.164 before sending it to cal.com', async (_case, phone, expected) => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({ status: 'success', data: { uid: 'booking-uid-123' } }),
+    } as unknown as Response);
+    vi.stubGlobal('fetch', fetchMock);
+
+    const response = await worker.fetch(
+      createBookingRequest({ ...validBookingPayload, phone }),
+      env,
+    );
+
+    expect(response.status).toBe(201);
+    const [, init] = fetchMock.mock.calls[0];
+    expect(JSON.parse(init.body).attendee.phoneNumber).toBe(expected);
+  });
+
+  it('rejects a number that cannot be normalized without ever calling cal.com', async () => {
+    const fetchMock = vi.fn();
+    vi.stubGlobal('fetch', fetchMock);
+
+    const response = await worker.fetch(
+      createBookingRequest({ ...validBookingPayload, phone: '+49 170 1234567890123456' }),
+      env,
+    );
+    const body = (await response.json()) as { error: string };
+
+    expect(response.status).toBe(400);
+    expect(body.error).toContain('Telefonnummer');
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  // A rejected payload never succeeds on a second attempt, so it must not reach
+  // the browser as a 5xx that looks worth retrying.
+  it('maps a cal.com 4xx rejection to a 400, not a 502', async () => {
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => { });
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: false,
+        status: 400,
+        json: () =>
+          Promise.resolve({
+            error: { code: 'BAD_REQUEST', message: 'responses - {attendeePhoneNumber}invalid_number, ' },
+          }),
+      } as unknown as Response),
+    );
+
+    const response = await worker.fetch(createBookingRequest(validBookingPayload), env);
+    const body = (await response.json()) as { error: string };
+
+    expect(response.status).toBe(400);
+    expect(body.error).not.toContain('attendeePhoneNumber');
+    expect(errorSpy).toHaveBeenCalled();
+  });
+
+  it('still returns 502 when cal.com itself is broken', async () => {
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => { });
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: false,
+        status: 500,
+        json: () => Promise.resolve({ error: 'internal' }),
+      } as unknown as Response),
+    );
+
+    const response = await worker.fetch(createBookingRequest(validBookingPayload), env);
+
+    expect(response.status).toBe(502);
+    expect(errorSpy).toHaveBeenCalled();
+  });
 });

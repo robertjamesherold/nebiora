@@ -200,7 +200,7 @@ const TerminBuchen = () => {
                     onChange={setFirstName}
                     required
                     type="text"
-                    autoComplete="given-name"
+                    autoComplete="name"
                     as="input"
                   />
                   <Ui.Input
@@ -230,7 +230,6 @@ const TerminBuchen = () => {
                     onChange={setPhone}
                     required
                     type="tel"
-                    autoComplete="tel"
                     inputMode="tel"
                     as="input"
                   />

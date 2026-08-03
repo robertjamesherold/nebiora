@@ -5,7 +5,7 @@ const ContactData: ContactProps = {
   heading: 'Lassen Sie uns über Ihr Projekt sprechen.',
   description:
     'Kostenloses Erstgespräch, keine Verpflichtungen. Wir melden uns innerhalb von 24 Stunden.',
-  email: 'hallo@nebiora.studio',
+  email: 'kontakt@nebiora.studio',
   buttonText: 'Nachricht senden',
   sentHeading: 'Vielen Dank für Ihr Interesse!',
   sentMessage: 'Wir werden uns so schnell wie möglich bei Ihnen melden.',

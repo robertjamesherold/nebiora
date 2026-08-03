@@ -4,7 +4,7 @@ const ContactSectionData: ContactSectionProps = {
   category: 'Kontakt',
   heading: 'Erzählen Sie uns von Ihrem Projekt.',
   description: 'Kostenloses Erstgespräch, keine Verpflichtungen. Wir melden uns innerhalb von 24 Stunden.',
-  email: 'hallo@nebiora.studio',
+  email: 'kontakt@nebiora.studio',
   buttonText: 'Nachricht senden',
   sentHeading: 'Vielen Dank für Ihr Interesse!',
   sentMessage: 'Wir werden uns so schnell wie möglich bei Ihnen melden.',

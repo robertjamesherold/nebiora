@@ -88,12 +88,13 @@ const AngebotCheckout = ({ paket, onClose }: AngebotCheckoutProps) => {
         />
 
         <Components.ContactForm
-          contactEmail="hallo@nebiora.studio"
+          contactEmail="kontakt@nebiora.studio"
           fields={FIELDS}
           submitLabel="Anfrage senden"
           sentHeading="Vielen Dank für Ihre Anfrage!"
           sentMessage={`Wir melden uns in Kürze mit einem individuellen Angebot für „${paket.name}“.`}
           messagePrefix={`Neue Angebotsanfrage für das Paket „${paket.name}“.`}
+          formType="angebot"
           className="mt-8"
         />
       </Ui.Card>

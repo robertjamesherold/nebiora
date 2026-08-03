@@ -4,8 +4,9 @@ import worker from './index';
 
 const env: Env = {
   ALLOWED_ORIGIN: 'https://nebiora.studio',
-  CONTACT_TO_ADDRESS: 'hallo@nebiora.studio',
-  CONTACT_FROM_ADDRESS: 'onboarding@resend.dev',
+  CONTACT_TO_ADDRESS: 'kontakt@nebiora.studio',
+  BOOKING_TO_ADDRESS: 'buchungen@nebiora.studio',
+  CONTACT_FROM_ADDRESS: 'noreply@nebiora.studio',
   RESEND_API_KEY: 'test-key',
   CAL_API_KEY: 'cal-test-key',
   CAL_USERNAME: 'nebiora',
@@ -111,7 +112,7 @@ describe('backend contact worker', () => {
     );
 
     expect(response.status).toBe(200);
-    expect(fetchMock).toHaveBeenCalledOnce();
+    expect(fetchMock).toHaveBeenCalledTimes(2);
     const [url, init] = fetchMock.mock.calls[0];
     expect(url).toBe('https://api.resend.com/emails');
     expect(init.headers.Authorization).toBe('Bearer test-key');
@@ -119,6 +120,44 @@ describe('backend contact worker', () => {
     expect(sentBody.html).toContain('&lt;b&gt;Ada&lt;/b&gt;');
     expect(sentBody.html).toContain('Hi &amp; bye');
     expect(sentBody.reply_to).toBe('ada@example.com');
+
+    const [autoReplyUrl, autoReplyInit] = fetchMock.mock.calls[1];
+    expect(autoReplyUrl).toBe('https://api.resend.com/emails');
+    const autoReplyBody = JSON.parse(autoReplyInit.body);
+    expect(autoReplyBody.to).toEqual(['ada@example.com']);
+    expect(autoReplyBody.reply_to).toBe('kontakt@nebiora.studio');
+  });
+
+  it('sends the angebot-specific auto-reply when formType is "angebot"', async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValue({ ok: true, json: () => Promise.resolve({ id: 'email-id-123' }) } as unknown as Response);
+    vi.stubGlobal('fetch', fetchMock);
+
+    const response = await worker.fetch(
+      contactRequest({ ...validPayload, formType: 'angebot' }),
+      env,
+    );
+
+    expect(response.status).toBe(200);
+    const [, autoReplyInit] = fetchMock.mock.calls[1];
+    const autoReplyBody = JSON.parse(autoReplyInit.body);
+    expect(autoReplyBody.subject).toBe('Ihre Anfrage ist bei uns eingegangen');
+    expect(autoReplyBody.text).toContain('individuellen Angebot');
+  });
+
+  it('still returns success when the notification sends but the auto-reply fails', async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce({ ok: true, json: () => Promise.resolve({ id: 'notify-id' }) } as unknown as Response)
+      .mockResolvedValueOnce({ ok: false, status: 500, json: () => Promise.resolve({}) } as unknown as Response);
+    vi.stubGlobal('fetch', fetchMock);
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => { });
+
+    const response = await worker.fetch(contactRequest(validPayload), env);
+
+    expect(response.status).toBe(200);
+    expect(errorSpy).toHaveBeenCalledWith('Contact auto-reply failed to send');
   });
 
   it('returns 502 and does not leak the raw Resend response body when the send fails', async () => {
@@ -246,7 +285,7 @@ describe('backend booking worker', () => {
     const response = await worker.fetch(createBookingRequest(validBookingPayload), env);
 
     expect(response.status).toBe(201);
-    expect(fetchMock).toHaveBeenCalledOnce();
+    expect(fetchMock).toHaveBeenCalledTimes(3);
     const [url, init] = fetchMock.mock.calls[0];
     expect(url).toBe('https://api.cal.com/v2/bookings');
     expect(init.headers['cal-api-version']).toBe('2026-02-25');
@@ -261,6 +300,20 @@ describe('backend booking worker', () => {
       phoneNumber: '+491701234567',
     });
     expect(sentBody.bookingFieldsResponses).toBeUndefined();
+
+    const [notificationUrl, notificationInit] = fetchMock.mock.calls[1];
+    expect(notificationUrl).toBe('https://api.resend.com/emails');
+    const notificationBody = JSON.parse(notificationInit.body);
+    expect(notificationBody.to).toEqual(['buchungen@nebiora.studio']);
+    expect(notificationBody.reply_to).toBe('ada@example.com');
+    expect(notificationBody.subject).toContain('Ada Lovelace');
+
+    const [confirmationUrl, confirmationInit] = fetchMock.mock.calls[2];
+    expect(confirmationUrl).toBe('https://api.resend.com/emails');
+    const confirmationBody = JSON.parse(confirmationInit.body);
+    expect(confirmationBody.to).toEqual(['ada@example.com']);
+    expect(confirmationBody.reply_to).toBe('buchungen@nebiora.studio');
+    expect(confirmationBody.subject).toContain('bestätigt');
   });
 
   it('includes bookingFieldsResponses.notes only when notes are provided', async () => {

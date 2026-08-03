@@ -5,8 +5,9 @@
   "compatibility_date": "2026-07-17",
   "vars": {
     "ALLOWED_ORIGIN": "https://nebiora.studio",
-    "CONTACT_TO_ADDRESS": "hallo@nebiora.studio",
-    "CONTACT_FROM_ADDRESS": "onboarding@resend.dev",
+    "CONTACT_TO_ADDRESS": "kontakt@nebiora.studio",
+    "BOOKING_TO_ADDRESS": "buchungen@nebiora.studio",
+    "CONTACT_FROM_ADDRESS": "noreply@nebiora.studio",
     "CAL_USERNAME": "nebiora",
     "CAL_EVENT_SLUG": "buchungen",
   },

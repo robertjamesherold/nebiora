@@ -68,6 +68,7 @@ describe('useContactForm', () => {
       name: 'Ada Lovelace',
       email: 'ada@example.com',
       message: 'Neue Anfrage\n\nFirma: Acme\n\nHallo!',
+      formType: 'contact',
     });
     expect(result.current.sent).toBe(true);
     expect(result.current.sending).toBe(false);

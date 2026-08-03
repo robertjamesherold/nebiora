@@ -12,7 +12,7 @@ const LegalBodyData: LegalBodyProps = {
     {
       heading: 'Kontakt',
       body: [
-        'Telefon: +49 151 58338231 · E-Mail: hallo@nebiora.studio',
+        'Telefon: +49 151 58338231 · E-Mail: kontakt@nebiora.studio',
         'Für Presseanfragen, Kooperationen oder allgemeine Rückfragen erreichen Sie uns über die vorstehenden Kontaktdaten. Wir bemühen uns, Anfragen innerhalb von zwei Werktagen zu beantworten.',
       ],
     },

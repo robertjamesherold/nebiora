@@ -10,9 +10,10 @@ type UseContactFormArgs = {
   contactEmail: string;
   fields: string[];
   messagePrefix?: string;
+  formType?: 'contact' | 'angebot';
 };
 
-const useContactForm = ({ contactEmail, fields, messagePrefix }: UseContactFormArgs) => {
+const useContactForm = ({ contactEmail, fields, messagePrefix, formType = 'contact' }: UseContactFormArgs) => {
   const [values, setValues] = React.useState<Record<string, string>>(() =>
     Object.fromEntries(fields.map((field) => [field, ''])),
   );
@@ -47,7 +48,7 @@ const useContactForm = ({ contactEmail, fields, messagePrefix }: UseContactFormA
       const response = await fetch(CONTACT_API_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, message }),
+        body: JSON.stringify({ name, email, message, formType }),
       });
 
       if (!response.ok) {

@@ -17,6 +17,8 @@ type ContactFormProps = {
   sentHeading: string;
   sentMessage: string;
   messagePrefix?: string;
+  /** Which auto-reply the backend sends the customer after a successful submission. Defaults to 'contact'. */
+  formType?: 'contact' | 'angebot';
   className?: string;
 };
 

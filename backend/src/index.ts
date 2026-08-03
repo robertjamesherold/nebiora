@@ -1,7 +1,10 @@
+type ContactFormType = 'contact' | 'angebot';
+
 type ContactPayload = {
   name: string;
   email: string;
   message: string;
+  formType?: ContactFormType;
 };
 
 type BookingPayload = {
@@ -84,14 +87,18 @@ const calErrorMessage = (body: unknown): string | undefined => {
   return typeof message === 'string' ? CAL_ERROR_MESSAGES[message] : undefined;
 };
 
+const isContactFormType = (value: unknown): value is ContactFormType =>
+  value === 'contact' || value === 'angebot';
+
 const isContactPayload = (data: unknown): data is ContactPayload => {
   if (typeof data !== 'object' || data === null) return false;
-  const { name, email, message } = data as Record<string, unknown>;
+  const { name, email, message, formType } = data as Record<string, unknown>;
   return (
     isNonEmptyString(name) &&
     isNonEmptyString(email) &&
     isValidEmail(email) &&
-    isNonEmptyString(message)
+    isNonEmptyString(message) &&
+    (formType === undefined || isContactFormType(formType))
   );
 };
 
@@ -162,6 +169,97 @@ const fetchJson = async (
   }
 };
 
+// Every automated email — the contact-form notification, both auto-replies,
+// and the booking confirmation — goes through here so the Resend call shape
+// (headers, from, JSON body) only exists once.
+const sendMail = async (
+  context: string,
+  env: Env,
+  { to, replyTo, subject, text, html }: { to: string; replyTo?: string; subject: string; text: string; html: string },
+) => {
+  const result = await fetchJson(context, RESEND_API_URL, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${env.RESEND_API_KEY}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      from: `Nebiora Studio <${env.CONTACT_FROM_ADDRESS}>`,
+      to: [to],
+      ...(replyTo ? { reply_to: replyTo } : {}),
+      subject,
+      text,
+      html,
+    }),
+  });
+
+  if (!result) return false;
+  if (!result.response.ok) {
+    // Same reasoning as the contact-notification path below: never log the
+    // response body, it can carry recipient details from this request.
+    console.error(`${context} failed`, result.response.status);
+    return false;
+  }
+  return true;
+};
+
+const CONTACT_AUTO_REPLY_CONTENT: Record<ContactFormType, { subject: string; body: string }> = {
+  contact: {
+    subject: 'Vielen Dank für Ihre Nachricht',
+    body: 'vielen Dank für Ihre Nachricht — wir haben sie erhalten und melden uns innerhalb von 24 Stunden bei Ihnen.',
+  },
+  angebot: {
+    subject: 'Ihre Anfrage ist bei uns eingegangen',
+    body: 'vielen Dank für Ihre Anfrage — wir melden uns in Kürze mit einem individuellen Angebot.',
+  },
+};
+
+const contactAutoReply = (formType: ContactFormType, name: string) => {
+  const { subject, body } = CONTACT_AUTO_REPLY_CONTENT[formType];
+  return {
+    subject,
+    text: `Hallo ${name},\n\n${body}\n\nViele Grüße\nIhr Nebiora-Team`,
+    html: `<p>Hallo ${escapeHtml(name)},</p><p>${body}</p><p>Viele Grüße<br>Ihr Nebiora-Team</p>`,
+  };
+};
+
+const formatBookingDateTime = (isoStart: string, timeZone: string) => {
+  try {
+    return new Intl.DateTimeFormat('de-DE', { dateStyle: 'full', timeStyle: 'short', timeZone }).format(
+      new Date(isoStart),
+    );
+  } catch {
+    // An unrecognized IANA zone (malformed client data) must not break the
+    // confirmation email — fall back to a UTC rendering rather than throw.
+    return new Intl.DateTimeFormat('de-DE', { dateStyle: 'full', timeStyle: 'short', timeZone: 'UTC' }).format(
+      new Date(isoStart),
+    );
+  }
+};
+
+const bookingConfirmation = (name: string, isoStart: string, timeZone: string) => {
+  const when = formatBookingDateTime(isoStart, timeZone);
+  return {
+    subject: 'Ihr Termin bei Nebiora.studio ist bestätigt',
+    text: `Hallo ${name},\n\nIhr Erstgespräch ist bestätigt für:\n${when} Uhr\n\nWir rufen Sie zur vereinbarten Zeit an. Falls Sie den Termin verschieben müssen, antworten Sie einfach auf diese E-Mail.\n\nViele Grüße\nIhr Nebiora-Team`,
+    html: `<p>Hallo ${escapeHtml(name)},</p><p>Ihr Erstgespräch ist bestätigt für:</p><p><strong>${escapeHtml(when)} Uhr</strong></p><p>Wir rufen Sie zur vereinbarten Zeit an. Falls Sie den Termin verschieben müssen, antworten Sie einfach auf diese E-Mail.</p><p>Viele Grüße<br>Ihr Nebiora-Team</p>`,
+  };
+};
+
+// cal.com already emails whatever host address is configured in its own
+// account settings — this is a second, independent notification we control
+// directly, so a new booking always reaches buchungen@ regardless of that
+// cal.com-side configuration.
+const bookingNotification = (name: string, email: string, phone: string, isoStart: string, timeZone: string, notes?: string) => {
+  const when = formatBookingDateTime(isoStart, timeZone);
+  const notesLine = notes ? `\n\nNotizen: ${notes}` : '';
+  return {
+    subject: `Neue Terminbuchung von ${name}`,
+    text: `Neue Terminbuchung:\n\n${when} Uhr\n${name} (${email}, ${phone})${notesLine}`,
+    html: `<p>Neue Terminbuchung:</p><p><strong>${escapeHtml(when)} Uhr</strong></p><p>${escapeHtml(name)} (${escapeHtml(email)}, ${escapeHtml(phone)})</p>${notes ? `<p>Notizen: ${escapeHtml(notes)}</p>` : ''}`,
+  };
+};
+
 export default {
   async fetch(request, env): Promise<Response> {
     const origin = env.ALLOWED_ORIGIN || '*';
@@ -188,37 +286,30 @@ export default {
         return jsonResponse({ error: 'Name, E-Mail und Nachricht werden benötigt.' }, 400, origin);
       }
 
-      const { name, email, message } = payload;
+      const { name, email, message, formType = 'contact' } = payload;
 
-      const resendResult = await fetchJson('Resend send', RESEND_API_URL, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${env.RESEND_API_KEY}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          from: `Nebiora Kontaktformular <${env.CONTACT_FROM_ADDRESS}>`,
-          to: [env.CONTACT_TO_ADDRESS],
-          reply_to: email,
-          subject: `Neue Projektanfrage von ${name}`,
-          text: `${message}\n\n— ${name} (${email})`,
-          html: `<p>${escapeHtml(message).replace(/\n/g, '<br>')}</p><p>— ${escapeHtml(name)} (${escapeHtml(email)})</p>`,
-        }),
+      const notified = await sendMail('Resend send', env, {
+        to: env.CONTACT_TO_ADDRESS,
+        replyTo: email,
+        subject: `Neue Projektanfrage von ${name}`,
+        text: `${message}\n\n— ${name} (${email})`,
+        html: `<p>${escapeHtml(message).replace(/\n/g, '<br>')}</p><p>— ${escapeHtml(name)} (${escapeHtml(email)})</p>`,
       });
 
-      if (!resendResult) {
+      if (!notified) {
         return jsonResponse({ error: 'E-Mail konnte nicht gesendet werden.' }, 502, origin);
       }
 
-      const { response: resendResponse } = resendResult;
-
-      if (!resendResponse.ok) {
-        // Never log Resend's response body here — it can carry the sender/recipient
-        // details from this request, and unlike cal.com's errors, none of Resend's
-        // rejection reasons (bad sender domain, API key, rate limit) are something
-        // the customer submitting this form could act on anyway.
-        console.error('Resend send failed', resendResponse.status);
-        return jsonResponse({ error: 'E-Mail konnte nicht gesendet werden.' }, 502, origin);
+      // Best-effort: the notification above is what matters, and it already
+      // succeeded — a failed auto-reply must not turn a received message into
+      // an error response for the customer.
+      const autoReplySent = await sendMail('Contact auto-reply', env, {
+        to: email,
+        replyTo: env.CONTACT_TO_ADDRESS,
+        ...contactAutoReply(formType, name),
+      });
+      if (!autoReplySent) {
+        console.error('Contact auto-reply failed to send');
       }
 
       return jsonResponse({ ok: true }, 200, origin);
@@ -349,6 +440,27 @@ export default {
         }
 
         return jsonResponse({ error: 'Termin konnte nicht gebucht werden.' }, 502, origin);
+      }
+
+      // Both best-effort, same reasoning as the contact auto-reply: cal.com
+      // already created the booking, so a failed email here must not turn a
+      // successful booking into an error response for the customer.
+      const notifiedBooking = await sendMail('Booking notification', env, {
+        to: env.BOOKING_TO_ADDRESS,
+        replyTo: email,
+        ...bookingNotification(name, email, phoneNumber, start, timeZone, notes),
+      });
+      if (!notifiedBooking) {
+        console.error('Booking notification failed to send');
+      }
+
+      const confirmationSent = await sendMail('Booking confirmation', env, {
+        to: email,
+        replyTo: env.BOOKING_TO_ADDRESS,
+        ...bookingConfirmation(name, start, timeZone),
+      });
+      if (!confirmationSent) {
+        console.error('Booking confirmation failed to send');
       }
 
       return jsonResponse(calBody, 201, origin);

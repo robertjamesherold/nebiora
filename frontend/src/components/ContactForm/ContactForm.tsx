@@ -10,12 +10,14 @@ const ContactForm = ({
   sentHeading,
   sentMessage,
   messagePrefix,
+  formType,
   className = '',
 }: ContactFormProps) => {
   const { values, setValue, sent, sending, error, handleSubmit } = useContactForm({
     contactEmail,
     fields: fields.map((field) => field.label),
     messagePrefix,
+    formType,
   });
 
   if (sent) {

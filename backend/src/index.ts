@@ -81,6 +81,35 @@ const jsonResponse = (body: unknown, status: number, origin: string) =>
     },
   });
 
+// fetch() rejecting or the upstream body not being JSON both throw — left
+// unguarded, that surfaces to the client as a bare, unlogged 502 with no way
+// to tell what actually went wrong upstream.
+const fetchCalJson = async (
+  context: string,
+  input: string | URL,
+  init?: RequestInit,
+): Promise<{ response: Response; body: unknown } | null> => {
+  let response: Response;
+  try {
+    response = await fetch(input, init);
+  } catch (error) {
+    console.error(`${context}: request threw`, error instanceof Error ? error.message : String(error));
+    return null;
+  }
+
+  try {
+    const body = await response.json();
+    return { response, body };
+  } catch (error) {
+    console.error(
+      `${context}: response was not JSON`,
+      response.status,
+      error instanceof Error ? error.message : String(error),
+    );
+    return null;
+  }
+};
+
 export default {
   async fetch(request, env): Promise<Response> {
     const origin = env.ALLOWED_ORIGIN || '*';
@@ -153,17 +182,21 @@ export default {
       slotsUrl.searchParams.set('username', env.CAL_USERNAME);
       slotsUrl.searchParams.set('timeZone', timeZone);
 
-      const calResponse = await fetch(slotsUrl, {
+      const calResult = await fetchCalJson('cal.com slots request', slotsUrl, {
         headers: {
           'cal-api-version': CAL_SLOTS_API_VERSION,
           Authorization: `Bearer ${env.CAL_API_KEY}`,
         },
       });
 
-      const calBody = await calResponse.json();
+      if (!calResult) {
+        return jsonResponse({ error: 'Verfügbare Termine konnten nicht geladen werden.' }, 502, origin);
+      }
+
+      const { response: calResponse, body: calBody } = calResult;
 
       if (!calResponse.ok) {
-        console.error('cal.com slots request failed', calResponse.status);
+        console.error('cal.com slots request failed', calResponse.status, JSON.stringify(calBody));
         return jsonResponse({ error: 'Verfügbare Termine konnten nicht geladen werden.' }, 502, origin);
       }
 
@@ -192,7 +225,7 @@ export default {
 
       const { start, name, email, phone, timeZone, notes } = payload;
 
-      const calResponse = await fetch(`${CAL_API_URL}/bookings`, {
+      const calResult = await fetchCalJson('cal.com booking creation', `${CAL_API_URL}/bookings`, {
         method: 'POST',
         headers: {
           'cal-api-version': CAL_BOOKINGS_API_VERSION,
@@ -208,7 +241,11 @@ export default {
         }),
       });
 
-      const calBody = await calResponse.json();
+      if (!calResult) {
+        return jsonResponse({ error: 'Termin konnte nicht gebucht werden.' }, 502, origin);
+      }
+
+      const { response: calResponse, body: calBody } = calResult;
 
       if (!calResponse.ok) {
         console.error('cal.com booking creation failed', calResponse.status, JSON.stringify(calBody));

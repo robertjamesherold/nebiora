@@ -200,7 +200,7 @@ const TerminBuchen = () => {
                     onChange={setFirstName}
                     required
                     type="text"
-                    autoComplete="name"
+                    autoComplete="given-name"
                     as="input"
                   />
                   <Ui.Input
@@ -227,7 +227,24 @@ const TerminBuchen = () => {
                     label="Telefonnummer*"
                     placeholder="+49 170 1234567"
                     value={phone}
-                    onChange={setPhone}
+                    onChange={(value: string) => {
+                      const trimmed = value.trimStart();
+                      if (trimmed === '') {
+                        setPhone('');
+                        return;
+                      }
+                      if (trimmed.startsWith('+49')) {
+                        setPhone(trimmed);
+                      } else if (trimmed.startsWith('49')) {
+                        setPhone('+49' + trimmed.slice(2));
+                      } else if (trimmed.startsWith('0')) {
+                        setPhone('+49' + trimmed.slice(1));
+                      } else if (trimmed.startsWith('+')) {
+                        setPhone(trimmed);
+                      } else {
+                        setPhone('+49' + trimmed);
+                      }
+                    }}
                     required
                     type="tel"
                     inputMode="tel"

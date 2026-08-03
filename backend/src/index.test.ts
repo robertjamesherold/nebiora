@@ -361,6 +361,34 @@ describe('backend booking worker', () => {
     expect(errorSpy).toHaveBeenCalled();
   });
 
+  it('surfaces a specific message when cal.com rejects an undeliverable email domain', async () => {
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => { });
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: false,
+        status: 400,
+        json: () =>
+          Promise.resolve({
+            statusCode: 400,
+            message: 'email_domain_cannot_receive_mail',
+            status: 'error',
+            error: {
+              code: 'HttpError',
+              message: 'This email address cannot receive mail. Please use a valid email.',
+            },
+          }),
+      } as unknown as Response),
+    );
+
+    const response = await worker.fetch(createBookingRequest(validBookingPayload), env);
+    const body = (await response.json()) as { error: string };
+
+    expect(response.status).toBe(400);
+    expect(body.error).toBe('Diese E-Mail-Adresse kann keine Nachrichten empfangen. Bitte prüfen Sie sie auf Tippfehler.');
+    expect(errorSpy).toHaveBeenCalled();
+  });
+
   it('still returns 502 when cal.com itself is broken', async () => {
     const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => { });
     vi.stubGlobal(

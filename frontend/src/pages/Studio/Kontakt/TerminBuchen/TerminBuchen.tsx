@@ -194,7 +194,7 @@ const TerminBuchen = () => {
               <form onSubmit={handleSubmit} className="flex flex-col gap-5 lg:gap-4">
                 <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:gap-4">
                   <Ui.Input
-                    label="Vorname*"
+                    label="Vorname"
                     placeholder="Max"
                     name="firstName"
                     value={firstName}
@@ -205,7 +205,7 @@ const TerminBuchen = () => {
                     as="input"
                   />
                   <Ui.Input
-                    label="Nachname*"
+                    label="Nachname"
                     placeholder="Mustermann"
                     name="lastName"
                     value={lastName}
@@ -216,7 +216,7 @@ const TerminBuchen = () => {
                     as="input"
                   />
                   <Ui.Input
-                    label="E-Mail*"
+                    label="E-Mail"
                     placeholder="ihre@email.de"
                     name="email"
                     value={email}
@@ -227,7 +227,7 @@ const TerminBuchen = () => {
                     as="input"
                   />
                   <Ui.Input
-                    label="Telefonnummer*"
+                    label="Telefonnummer"
                     placeholder="+49 170 1234567"
                     name="phone"
                     value={phone}

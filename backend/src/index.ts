@@ -69,6 +69,21 @@ const toE164 = (value: string) => {
 // E.164 allows at most 15 digits, and the country code never starts with 0.
 const isE164 = (value: string) => /^\+[1-9]\d{7,14}$/.test(value);
 
+// cal.com's raw rejection text sometimes echoes internal field names verbatim
+// (e.g. "responses - {attendeePhoneNumber}invalid_number") — never fit to
+// show a customer. Only known, customer-actionable error codes get a
+// specific message; anything else falls back to the generic one.
+const CAL_ERROR_MESSAGES: Record<string, string> = {
+  email_domain_cannot_receive_mail:
+    'Diese E-Mail-Adresse kann keine Nachrichten empfangen. Bitte prüfen Sie sie auf Tippfehler.',
+};
+
+const calErrorMessage = (body: unknown): string | undefined => {
+  if (typeof body !== 'object' || body === null) return undefined;
+  const { message } = body as Record<string, unknown>;
+  return typeof message === 'string' ? CAL_ERROR_MESSAGES[message] : undefined;
+};
+
 const isContactPayload = (data: unknown): data is ContactPayload => {
   if (typeof data !== 'object' || data === null) return false;
   const { name, email, message } = data as Record<string, unknown>;
@@ -315,6 +330,7 @@ export default {
           return jsonResponse(
             {
               error:
+                calErrorMessage(calBody) ??
                 'Die Buchungsdaten wurden nicht akzeptiert. Bitte prüfen Sie Telefonnummer und E-Mail-Adresse.',
             },
             400,

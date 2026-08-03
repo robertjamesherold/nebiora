@@ -119,6 +119,7 @@ describe('backend contact worker', () => {
     const sentBody = JSON.parse(init.body);
     expect(sentBody.html).toContain('&lt;b&gt;Ada&lt;/b&gt;');
     expect(sentBody.html).toContain('Hi &amp; bye');
+    expect(sentBody.html).toContain('logo-email.png');
     expect(sentBody.reply_to).toBe('ada@example.com');
 
     const [autoReplyUrl, autoReplyInit] = fetchMock.mock.calls[1];
@@ -126,6 +127,7 @@ describe('backend contact worker', () => {
     const autoReplyBody = JSON.parse(autoReplyInit.body);
     expect(autoReplyBody.to).toEqual(['ada@example.com']);
     expect(autoReplyBody.reply_to).toBe('kontakt@nebiora.studio');
+    expect(autoReplyBody.html).toContain('logo-email.png');
   });
 
   it('sends the angebot-specific auto-reply when formType is "angebot"', async () => {
@@ -285,7 +287,7 @@ describe('backend booking worker', () => {
     const response = await worker.fetch(createBookingRequest(validBookingPayload), env);
 
     expect(response.status).toBe(201);
-    expect(fetchMock).toHaveBeenCalledTimes(3);
+    expect(fetchMock).toHaveBeenCalledTimes(2);
     const [url, init] = fetchMock.mock.calls[0];
     expect(url).toBe('https://api.cal.com/v2/bookings');
     expect(init.headers['cal-api-version']).toBe('2026-02-25');
@@ -301,19 +303,15 @@ describe('backend booking worker', () => {
     });
     expect(sentBody.bookingFieldsResponses).toBeUndefined();
 
-    const [notificationUrl, notificationInit] = fetchMock.mock.calls[1];
-    expect(notificationUrl).toBe('https://api.resend.com/emails');
-    const notificationBody = JSON.parse(notificationInit.body);
-    expect(notificationBody.to).toEqual(['buchungen@nebiora.studio']);
-    expect(notificationBody.reply_to).toBe('ada@example.com');
-    expect(notificationBody.subject).toContain('Ada Lovelace');
-
-    const [confirmationUrl, confirmationInit] = fetchMock.mock.calls[2];
+    const [confirmationUrl, confirmationInit] = fetchMock.mock.calls[1];
     expect(confirmationUrl).toBe('https://api.resend.com/emails');
     const confirmationBody = JSON.parse(confirmationInit.body);
     expect(confirmationBody.to).toEqual(['ada@example.com']);
     expect(confirmationBody.reply_to).toBe('buchungen@nebiora.studio');
     expect(confirmationBody.subject).toContain('bestätigt');
+    expect(confirmationBody.text).toContain('buchungen@nebiora.studio');
+    expect(confirmationBody.text).toContain('+49 151 58338231');
+    expect(confirmationBody.html).toContain('logo-email.png');
   });
 
   it('includes bookingFieldsResponses.notes only when notes are provided', async () => {

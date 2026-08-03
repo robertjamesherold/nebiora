@@ -17,6 +17,7 @@ type BookingPayload = {
 };
 
 const RESEND_API_URL = 'https://api.resend.com/emails';
+const EMAIL_LOGO_URL = 'https://nebiora.studio/logo-email.png';
 const CAL_API_URL = 'https://api.cal.com/v2';
 const CAL_SLOTS_API_VERSION = '2024-09-04';
 const CAL_BOOKINGS_API_VERSION = '2026-02-25';
@@ -189,7 +190,7 @@ const sendMail = async (
       ...(replyTo ? { reply_to: replyTo } : {}),
       subject,
       text,
-      html,
+      html: `${html}<div style="margin-top:24px;padding-top:16px;border-top:1px solid #e5e5e5;"><img src="${EMAIL_LOGO_URL}" alt="Nebiora" width="150" height="18" style="display:block;"></div>`,
     }),
   });
 
@@ -237,26 +238,15 @@ const formatBookingDateTime = (isoStart: string, timeZone: string) => {
   }
 };
 
-const bookingConfirmation = (name: string, isoStart: string, timeZone: string) => {
+const BOOKING_PHONE_NUMBER = '+49 151 58338231';
+
+const bookingConfirmation = (name: string, isoStart: string, timeZone: string, bookingToAddress: string) => {
   const when = formatBookingDateTime(isoStart, timeZone);
+  const changeNotice = `Falls sich etwas an Ihrem Termin ändert (Absage oder Verschiebung), schreiben Sie uns an ${bookingToAddress} oder rufen Sie uns an: ${BOOKING_PHONE_NUMBER}.`;
   return {
     subject: 'Ihr Termin bei Nebiora.studio ist bestätigt',
-    text: `Hallo ${name},\n\nIhr Erstgespräch ist bestätigt für:\n${when} Uhr\n\nWir rufen Sie zur vereinbarten Zeit an. Falls Sie den Termin verschieben müssen, antworten Sie einfach auf diese E-Mail.\n\nViele Grüße\nIhr Nebiora-Team`,
-    html: `<p>Hallo ${escapeHtml(name)},</p><p>Ihr Erstgespräch ist bestätigt für:</p><p><strong>${escapeHtml(when)} Uhr</strong></p><p>Wir rufen Sie zur vereinbarten Zeit an. Falls Sie den Termin verschieben müssen, antworten Sie einfach auf diese E-Mail.</p><p>Viele Grüße<br>Ihr Nebiora-Team</p>`,
-  };
-};
-
-// cal.com already emails whatever host address is configured in its own
-// account settings — this is a second, independent notification we control
-// directly, so a new booking always reaches buchungen@ regardless of that
-// cal.com-side configuration.
-const bookingNotification = (name: string, email: string, phone: string, isoStart: string, timeZone: string, notes?: string) => {
-  const when = formatBookingDateTime(isoStart, timeZone);
-  const notesLine = notes ? `\n\nNotizen: ${notes}` : '';
-  return {
-    subject: `Neue Terminbuchung von ${name}`,
-    text: `Neue Terminbuchung:\n\n${when} Uhr\n${name} (${email}, ${phone})${notesLine}`,
-    html: `<p>Neue Terminbuchung:</p><p><strong>${escapeHtml(when)} Uhr</strong></p><p>${escapeHtml(name)} (${escapeHtml(email)}, ${escapeHtml(phone)})</p>${notes ? `<p>Notizen: ${escapeHtml(notes)}</p>` : ''}`,
+    text: `Hallo ${name},\n\nIhr Erstgespräch ist bestätigt für:\n${when} Uhr\n\nWir rufen Sie zur vereinbarten Zeit an. ${changeNotice}\n\nViele Grüße\nIhr Nebiora-Team`,
+    html: `<p>Hallo ${escapeHtml(name)},</p><p>Ihr Erstgespräch ist bestätigt für:</p><p><strong>${escapeHtml(when)} Uhr</strong></p><p>Wir rufen Sie zur vereinbarten Zeit an. ${escapeHtml(changeNotice)}</p><p>Viele Grüße<br>Ihr Nebiora-Team</p>`,
   };
 };
 
@@ -442,22 +432,15 @@ export default {
         return jsonResponse({ error: 'Termin konnte nicht gebucht werden.' }, 502, origin);
       }
 
-      // Both best-effort, same reasoning as the contact auto-reply: cal.com
-      // already created the booking, so a failed email here must not turn a
-      // successful booking into an error response for the customer.
-      const notifiedBooking = await sendMail('Booking notification', env, {
-        to: env.BOOKING_TO_ADDRESS,
-        replyTo: email,
-        ...bookingNotification(name, email, phoneNumber, start, timeZone, notes),
-      });
-      if (!notifiedBooking) {
-        console.error('Booking notification failed to send');
-      }
-
+      // cal.com's own host identity for this event type is "Nebiora
+      // Buchungen <buchungen@nebiora.studio>", so it already notifies the
+      // business — only the customer-facing confirmation is ours to send.
+      // Best-effort: cal.com already created the booking, so a failed email
+      // here must not turn a successful booking into an error response.
       const confirmationSent = await sendMail('Booking confirmation', env, {
         to: email,
         replyTo: env.BOOKING_TO_ADDRESS,
-        ...bookingConfirmation(name, start, timeZone),
+        ...bookingConfirmation(name, start, timeZone, env.BOOKING_TO_ADDRESS),
       });
       if (!confirmationSent) {
         console.error('Booking confirmation failed to send');
